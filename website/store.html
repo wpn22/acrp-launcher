@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المتجر - Adventure City</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../app/assets/images/SealCircle.ico">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="../app/assets/images/SealCircle.png" alt="ACRP">
+        <span>Adventure City</span>
+    </div>
+    <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+    <ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="about.html">عن السيرفر</a></li>
+        <li><a href="store.html" class="active">المتجر</a></li>
+        <li><a href="rules.html">القوانين</a></li>
+        <li><a href="team.html">الفريق</a></li>
+        <li><a href="contact.html">تواصل معنا</a></li>
+        <li><a href="https://github.com/wpn22/acrp-launcher/releases/latest" class="nav-download">حمّل اللانشر</a></li>
+    </ul>
+</nav>
+
+<div class="page-header">
+    <h1>متجر Adventure City</h1>
+    <p>اشترِ باقات AC واستلمها مباشرة في السيرفر</p>
+</div>
+
+<section class="section">
+    <div class="section-header">
+        <h2>باقات العملة (AC)</h2>
+        <p>عملة AC هي العملة الرسمية داخل السيرفر. استخدمها لشراء الأراضي والعقارات والمركبات والمزيد.</p>
+    </div>
+    <div class="store-grid">
+
+        <div class="store-card">
+            <span class="store-tag">Starter</span>
+            <h3>100,000 AC</h3>
+            <div class="store-price">$10 <span>USD</span></div>
+            <p class="store-desc">باقة المبتدئين. ابدأ رحلتك في المدينة بمبلغ مناسب.</p>
+            <ul class="store-features">
+                <li>100,000 AC فورية</li>
+                <li>استلام مباشر في السيرفر</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card">
+            <span class="store-tag">Basic</span>
+            <h3>250,000 AC</h3>
+            <div class="store-price">$25 <span>USD</span></div>
+            <p class="store-desc">لل/lgplين اللي يبون يبنون شيء كبير. مبلغ جيد يفتح لك أبواب كثيرة.</p>
+            <ul class="store-features">
+                <li>250,000 AC فورية</li>
+                <li>استلام مباشر في السيرفر</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card popular">
+            <div class="store-badge">&#11088; الأكثر مبيعاً</div>
+            <span class="store-tag">Popular</span>
+            <h3>500,000 AC</h3>
+            <div class="store-price">$50 <span>USD</span></div>
+            <p class="store-desc">الباقة الأكثر شعبية. امتلاك كبير يعطيك حرية كاملة.</p>
+            <ul class="store-features">
+                <li>500,000 AC فورية</li>
+                <li>استلام مباشر في السيرفر</li>
+                <li>هدية مفاجئة إضافية</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-gold store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card">
+            <span class="store-tag">Roleplay</span>
+            <h3>1,000,000 AC</h3>
+            <div class="store-price">$100 <span>USD</span></div>
+            <p class="store-desc">للاعبين الجادين. +50,000 AC هدية مع الباقة!</p>
+            <ul class="store-features">
+                <li>1,050,000 AC (+50K هدية)</li>
+                <li>استلام مباشر في السيرفر</li>
+                <li>بونص إضافي</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card">
+            <span class="store-tag">Advanced</span>
+            <h3>2,500,000 AC</h3>
+            <div class="store-price">$250 <span>USD</span></div>
+            <p class="store-desc">لرواد الأعمال. +200,000 AC هدية مع الباقة!</p>
+            <ul class="store-features">
+                <li>2,700,000 AC (+200K هدية)</li>
+                <li>استلام مباشر في السيرفر</li>
+                <li>بونص ضخم</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card popular">
+            <div class="store-badge">&#128293; الأعلى قيمة</div>
+            <span class="store-tag">Ultimate</span>
+            <h3>5,000,000 AC</h3>
+            <div class="store-price">$500 <span>USD</span></div>
+            <p class="store-desc">أكبر باقة في المتجر. +500,000 AC هدية! ملك المدينة.</p>
+            <ul class="store-features">
+                <li>5,500,000 AC (+500K هدية)</li>
+                <li>استلام مباشر في السيرفر</li>
+                <li>أكبر بونص متاح</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-gold store-btn">اشترِ الآن</a>
+        </div>
+
+    </div>
+
+    <div style="margin-top:3rem; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; text-align:center;">
+        <h3 style="margin-bottom:0.5rem;">&#128172; كيف أشتري؟</h3>
+        <p style="color:var(--text-secondary); max-width:600px; margin:0 auto;">
+            1. اختر الباقة المناسبة &rarr; 2. تواصل معنا عبر Discord &rarr; 3. أكمل الدفع &rarr; 4. تستلم AC مباشرة في السيرفر!
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <h2>باقات VIP</h2>
+        <p>مزايا حصرية للاعبين المميزين</p>
+    </div>
+    <div class="store-grid">
+
+        <div class="store-card">
+            <span class="store-tag" style="background:rgba(49,208,109,0.15); color:#31d06d;">Silver</span>
+            <h3>عضو فضي</h3>
+            <div class="store-price">$15 <span>USD / شهرياً</span></div>
+            <p class="store-desc">مزايا أساسية للاعبين النشطين.</p>
+            <ul class="store-features">
+                <li>لقب خاص باللون الفضي</li>
+                <li>صندوق حاويات يومية</li>
+                <li>هاتف مخصص</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card popular">
+            <div class="store-badge">&#11088; الأكثر طلباً</div>
+            <span class="store-tag" style="background:rgba(215,167,67,0.15); color:#d7a743;">Gold</span>
+            <h3>عضو ذهبي</h3>
+            <div class="store-price">$30 <span>USD / شهرياً</span></div>
+            <p class="store-desc">للفعاليين. مزايا متقدمة وحوارات حصرية.</p>
+            <ul class="store-features">
+                <li>كل مزايا Silver</li>
+                <li>لقب ذهبي مميز</li>
+                <li>هاتف + سيارة خاصة</li>
+                <li>أراضي مخصصة</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-gold store-btn">اشترِ الآن</a>
+        </div>
+
+        <div class="store-card">
+            <span class="store-tag" style="background:rgba(168,85,247,0.15); color:#a855f7;">Diamond</span>
+            <h3>عضو ماسي</h3>
+            <div class="store-price">$50 <span>USD / شهرياً</span></div>
+            <p class="store-desc">أعلى مرتبة. كل المزايا الحصرية بدون حدود.</p>
+            <ul class="store-features">
+                <li>كل مزايا Gold</li>
+                <li>لقب ماسي فاخر</li>
+                <li>كل المركبات والأراضي</li>
+                <li>دخول خاص لمناطق حصرية</li>
+                <li>دعم أولوي</li>
+            </ul>
+            <a href="https://discord.gg/adventurecity" class="btn btn-outline store-btn">اشترِ الآن</a>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <ul class="footer-links">
+        <li><a href="https://github.com/wpn22/acrp-launcher">GitHub</a></li>
+        <li><a href="https://discord.gg/adventurecity">Discord</a></li>
+        <li><a href="rules.html">القوانين</a></li>
+        <li><a href="contact.html">تواصل معنا</a></li>
+    </ul>
+    <p>&copy; 2026 Adventure City Roleplay. جميع الحقوق محفوظة.</p>
+</footer>
+
+</body>
+</html>
