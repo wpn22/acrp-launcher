@@ -5,7 +5,7 @@ const path = require('path')
 const ConfigManager = require('./configmanager')
 
 // In production, set the ACRP_DISTRO_URL env var to your hosted distribution.json URL
-// Example: https://raw.githubusercontent.com/AdventureCity/acrp-distro/main/distribution.json
+// Example: https://raw.githubusercontent.com/wpn22/acrp-launcher/master/app/assets/distribution.json
 exports.REMOTE_DISTRO_URL = process.env.ACRP_DISTRO_URL || 'http://127.0.0.1:38412/distribution.json'
 
 const BUNDLED_DISTRO_PATH = path.join(__dirname, '..', 'distribution.json')
