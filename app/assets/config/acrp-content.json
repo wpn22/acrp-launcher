@@ -1,0 +1,129 @@
+{
+  "_instructions": "هذا ملف تعديل محتوى ACRP Launcher. عدل النصوص والروابط والأخبار ثم أعد تشغيل اللانشر. إذا رفعت هذا الملف على GitHub Raw ضع الرابط في remoteContentUrl.",
+  "remoteContentUrl": "",
+  "brand": {
+    "launcherName": "ACRP Launcher",
+    "serverName": "Adventure City",
+    "shortName": "ACRP",
+    "packName": "AcRp"
+  },
+  "server": {
+    "address": "",
+    "minecraftVersion": "1.12.2",
+    "loader": "Forge 14.23.5.2860",
+    "statusWhenOffline": "غير متصل",
+    "addressWhenEmpty": "غير محدد حاليا"
+  },
+  "home": {
+    "headlineTop": "AC",
+    "headlineMain": "ADVENTURE",
+    "headlineAccent": "CITY",
+    "subtitle": "ROLEPLAY SERVER",
+    "copy": "مرحبا بك في مدينة Adventure City",
+    "subcopy": "حياة واقعية، اقتصاد AC، وظائف، إدارة نشطة، وتجربة رول بلاي مصممة للاستمرار."
+  },
+  "links": {
+    "discord": "https://discord.gg/cEDuKtcBk6",
+    "youtube": "https://www.youtube.com/@%D8%A7%D8%AF%D9%81%D9%86%D8%B4%D8%B1.%D8%B3%D9%8A%D8%AA%D9%8A",
+    "website": "",
+    "x": ""
+  },
+  "discordRpc": {
+    "clientId": "",
+    "largeImageKey": "acrp",
+    "largeImageText": "Adventure City Roleplay"
+  },
+  "game": {
+    "forceResourcePacks": true,
+    "resourcePacks": [
+      "cocricot_1.12.2_v1.11.0.zip"
+    ]
+  },
+  "gallery": [],
+  "panels": {
+    "discordTitle": "انضم لديسكورد السيرفر",
+    "discordText": "تواصل مع اللاعبين وتابع كل جديد.",
+    "staffTitle": "فريق الإدارة",
+    "staffText": "الفريق المسؤول عن إدارة التجربة وخدمة لاعبي المدينة.",
+    "rulesTitle": "قوانين Adventure City",
+    "rulesText": "التزامك بالقوانين يحافظ على تجربة رول بلاي عادلة وممتعة للجميع."
+  },
+  "rules": [
+    "احترام اللاعبين والإدارة.",
+    "ممنوع استخدام الثغرات أو البرامج الخارجية.",
+    "اتباع تعليمات الرول بلاي داخل المدينة.",
+    "ممنوع القتل أو الصدم العشوائي بدون سيناريو رول بلاي واضح.",
+    "حافظ على اقتصاد المدينة ولا تستغل الأخطاء المالية أو أخطاء المتجر.",
+    "أي مشكلة تقنية أو فقدان أغراض يتم رفعها في الديسكورد مع دليل واضح."
+  ],
+  "staff": [
+    {
+      "group": "Founder",
+      "name": "AC | WPN",
+      "role": "Founder",
+      "tag": "مالك السيرفر",
+      "status": "online",
+      "accent": "#8b5cf6"
+    },
+    {
+      "group": "Senior Mod",
+      "name": "AC | tamakuu",
+      "role": "Senior Mod",
+      "tag": "Sudan",
+      "status": "online",
+      "accent": "#22c55e"
+    },
+    {
+      "group": "Senior Mod",
+      "name": "AC | الحربي",
+      "role": "Senior Mod",
+      "tag": "ICEE",
+      "status": "online",
+      "accent": "#38bdf8"
+    },
+    {
+      "group": "Mod",
+      "name": "AC | Abu3abd",
+      "role": "Mod",
+      "tag": "إداري",
+      "status": "dnd",
+      "accent": "#84cc16"
+    },
+    {
+      "group": "Mod",
+      "name": "AC | s3d",
+      "role": "Mod",
+      "tag": "ELDN",
+      "status": "online",
+      "accent": "#84cc16"
+    },
+    {
+      "group": "Mod",
+      "name": "AC | moham...",
+      "role": "Mod",
+      "tag": "FLM",
+      "status": "online",
+      "accent": "#84cc16"
+    }
+  ],
+  "news": [
+    {
+      "title": "إطلاق ACRP Launcher",
+      "summary": "تم إطلاق النسخة الأولى من لانشر Adventure City مع فحص التحديثات وتجهيز باك AcRp.",
+      "date": "2026-05-25",
+      "author": "Adventure City",
+      "image": "assets/images/backgrounds/acrp-hero.png",
+      "link": "https://discord.gg/cEDuKtcBk6",
+      "content": "<p>تم إطلاق النسخة الأولى من ACRP Launcher لتجهيز دخول اللاعبين إلى Adventure City بسهولة.</p><p>اللانشر يفحص ملفات الباك، يحمل التحديثات، ويجهز إصدار 1.12.2 Forge 14.23.5.2860 باسم الباك AcRp.</p><p>تابعوا ديسكورد السيرفر لأي إعلان جديد أو تحديث قادم.</p>"
+    },
+    {
+      "title": "تجهيز متجر AC",
+      "summary": "تم تجهيز واجهة الشوب بباقات عملة AC حتى 10 مليون مع بونص إضافي للباقات الكبيرة.",
+      "date": "2026-05-25",
+      "author": "Adventure City",
+      "image": "assets/images/backgrounds/acrp-hero.png",
+      "link": "https://discord.gg/cEDuKtcBk6",
+      "content": "<p>تم تجهيز متجر Adventure City داخل اللانشر لعرض باقات عملة AC الرسمية.</p><p>السعر الأساسي: 100,000 AC مقابل 10$. كل الباقات مدفوعة، والبونص يضاف فقط مع الباقة بعد الشراء، مثل عرض 5,000,000 AC حيث يستلم اللاعب 5,500,000 AC.</p><p>سيتم تفعيل روابط الشراء بعد ربط المتجر الرسمي.</p>"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+    "version": "1.0.0",
+    "discord": {
+        "clientId": "TODO_DISCORD_CLIENT_ID",
+        "smallImageText": "Adventure City",
+        "smallImageKey": "acrp"
+    },
+    "rss": "",
+    "servers": [
+        {
+            "id": "AdventureCity-1.12.2",
+            "name": "Adventure City",
+            "description": "Adventure City Roleplay server for Minecraft 1.12.2.",
+            "icon": "TODO_GITHUB_RAW_ICON_URL",
+            "version": "0.1.0",
+            "address": "TODO_SERVER_ADDRESS",
+            "minecraftVersion": "1.12.2",
+            "javaOptions": {
+                "supported": ">=8 <9",
+                "suggestedMajor": 8,
+                "ram": {
+                    "minimum": 2048,
+                    "recommended": 4096
+                }
+            },
+            "discord": {
+                "shortId": "Adventure City",
+                "largeImageText": "Adventure City Roleplay",
+                "largeImageKey": "acrp"
+            },
+            "mainServer": true,
+            "autoconnect": true,
+            "modules": []
+        }
+    ]
+}

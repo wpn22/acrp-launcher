@@ -1,0 +1,276 @@
+<div id="landingContainer" class="acrp-shell" style="display: none;">
+    <aside class="acrp-sidebar">
+        <div class="acrp-brand">
+            <img src="assets/images/acrp-logo.jpg" alt="ACRP">
+            <div>
+                <span id="acrpSidebarBrandMain">ADVENTURE</span>
+                <strong id="acrpSidebarBrandAccent">CITY</strong>
+            </div>
+        </div>
+
+        <nav class="acrp-nav">
+            <button class="acrp-nav-item active" type="button" data-acrp-section="home">
+                <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <%- lang('acrp.navHome') %>
+            </button>
+            <button class="acrp-nav-item" type="button" data-acrp-section="play">
+                <svg viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 4 4v3.5a2.5 2.5 0 0 1-4.6 1.4L15 15H9l-1.4 1.9A2.5 2.5 0 0 1 3 15.5V12a4 4 0 0 1 4-4Zm1.5 3.2H7v1.5H5.5v1.5H7v1.5h1.5v-1.5H10v-1.5H8.5Zm7.5.8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm3 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
+                <%- lang('acrp.navPlay') %>
+            </button>
+            <button class="acrp-nav-item" id="newsButton" type="button">
+                <span id="newsButtonAlert" style="display: none;"></span>
+                <svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg>
+                <span id="newsButtonText"><%- lang('acrp.navNews') %></span>
+            </button>
+            <button class="acrp-nav-item" type="button" data-acrp-section="staff">
+                <svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8ZM2 20a6 6 0 0 1 12 0v1H2zm10.5 1v-1a7.4 7.4 0 0 0-1.4-4.3A6 6 0 0 1 22 20v1z"/></svg>
+                <%- lang('acrp.navStaff') %>
+            </button>
+            <button class="acrp-nav-item" type="button" data-acrp-section="rules">
+                <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 1.5V8h4.5M8 12h8v2H8zm0 4h8v2H8z"/></svg>
+                <%- lang('acrp.navRules') %>
+            </button>
+            <button class="acrp-nav-item" id="settingsMediaButton" type="button">
+                <svg viewBox="0 0 24 24"><path d="M19.4 13.5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.4-2.4 1a8 8 0 0 0-2.6-1.5L14 2h-4l-.4 2.6A8 8 0 0 0 7 6.1l-2.4-1-2 3.4 2 1.5a7.7 7.7 0 0 0-.1 1.5 7.7 7.7 0 0 0 .1 1.5l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 2.6 1.5L10 22h4l.4-2.6a8 8 0 0 0 2.6-1.5l2.4 1 2-3.4zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>
+                <%- lang('acrp.navSettings') %>
+            </button>
+        </nav>
+
+        <div class="acrp-follow">
+            <span><%- lang('acrp.followUs') %></span>
+            <div id="mediaContent">
+                <a href="<%- lang('landing.mediaDiscordURL') %>" class="mediaURL" id="discordURL" title="Discord">
+                    <svg class="mediaSVG" viewBox="0 0 24 24"><path d="M19 5.5A15 15 0 0 0 15.3 4l-.2.4a14 14 0 0 1 3.2 1.6 11 11 0 0 0-9.5 0A14 14 0 0 1 12 4.4L11.8 4A15 15 0 0 0 8 5.5C5.7 9 5 12.4 5.3 15.7A15 15 0 0 0 9.8 18l.6-.8a10 10 0 0 1-1.7-.8l.4-.3a11 11 0 0 0 9.8 0l.4.3a10 10 0 0 1-1.7.8l.6.8a15 15 0 0 0 4.5-2.3C23 12.4 22.3 9 19 5.5ZM10 14a1.3 1.3 0 1 1 0-2.6A1.3 1.3 0 0 1 10 14Zm4 0a1.3 1.3 0 1 1 0-2.6A1.3 1.3 0 0 1 14 14Z"/></svg>
+                </a>
+                <a href="<%- lang('landing.mediaXURL') %>" class="mediaURL" id="xURL" title="X">
+                    <svg class="mediaSVG" viewBox="0 0 24 24"><path d="M18.2 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.3L5.6 21H2.5l7.3-8.4L2.1 3h6.5l4.4 5.7zM17 19.2h1.7L7.7 4.7H5.9z"/></svg>
+                </a>
+                <a href="<%- lang('landing.mediaYouTubeURL') %>" class="mediaURL" id="youtubeURL" title="YouTube">
+                    <svg class="mediaSVG" viewBox="0 0 24 24"><path d="M21.5 7.3a3 3 0 0 0-2.1-2.1C17.5 4.7 12 4.7 12 4.7s-5.5 0-7.4.5a3 3 0 0 0-2.1 2.1C2 9.2 2 12 2 12s0 2.8.5 4.7a3 3 0 0 0 2.1 2.1c1.9.5 7.4.5 7.4.5s5.5 0 7.4-.5a3 3 0 0 0 2.1-2.1C22 14.8 22 12 22 12s0-2.8-.5-4.7ZM10 15.5v-7l6 3.5z"/></svg>
+                </a>
+                <a href="<%- lang('landing.mediaGitHubURL') %>" class="mediaURL" id="linkURL" title="Website">
+                    <svg class="mediaSVG" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3a15 15 0 0 0-1.1-3 8 8 0 0 1 4.1 3ZM12 4.1A12 12 0 0 1 13.8 8h-3.6A12 12 0 0 1 12 4.1ZM4.3 14a8 8 0 0 1 0-4h3.4a16 16 0 0 0 0 4Zm.8 2h3a15 15 0 0 0 1.1 3 8 8 0 0 1-4.1-3Zm3-8h-3a8 8 0 0 1 4.1-3A15 15 0 0 0 8.1 8Zm3.9 11.9A12 12 0 0 1 10.2 16h3.6A12 12 0 0 1 12 19.9ZM14.2 14H9.8a14 14 0 0 1 0-4h4.4a14 14 0 0 1 0 4Zm.6 5a15 15 0 0 0 1.1-3h3a8 8 0 0 1-4.1 3Zm1.5-5a16 16 0 0 0 0-4h3.4a8 8 0 0 1 0 4Z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="acrp-user-card">
+            <div id="avatarContainer">
+                <button id="avatarOverlay"><%- lang('landing.usernameEditButton') %></button>
+            </div>
+            <div>
+                <strong id="user_text"><%- lang('landing.usernamePlaceholder') %></strong>
+                <span><%- lang('acrp.online') %></span>
+            </div>
+        </div>
+        <button class="acrp-secondary-button" type="button"><%- lang('acrp.logout') %></button>
+        <small class="acrp-version">v1.0.0</small>
+    </aside>
+
+    <main class="acrp-main">
+        <section class="acrp-hero acrp-view-active" id="acrpHomeView">
+            <div class="acrp-hero-header">
+                <div class="acrp-hero-badge">
+                    <img src="assets/images/acrp-logo.jpg" alt="Adventure City">
+                    <div>
+                        <span>ACRP CONTROL</span>
+                        <strong>Adventure City Launcher</strong>
+                    </div>
+                </div>
+                <div class="acrp-hero-system">
+                    <span>Forge 1.12.2</span>
+                    <span>Resource Pack Auto</span>
+                </div>
+            </div>
+            <div id="image_seal_container">
+                <img id="image_seal" src="assets/images/acrp-logo.jpg" alt="Adventure City">
+                <div id="updateAvailableTooltip"><%- lang('landing.updateAvailableTooltip') %></div>
+            </div>
+            <div class="acrp-city-title">
+                <span id="acrpHeroTop">ACRP / <b id="acrpHeroSubtitle">ROLEPLAY SERVER</b></span>
+                <h1><span id="acrpHeroMain">ADVENTURE</span> <strong id="acrpHeroAccent">CITY</strong></h1>
+                <p>PRIVATE CITY LAUNCHER</p>
+            </div>
+            <div class="acrp-title-lockup" aria-hidden="true">
+                <span>AC</span>
+                <h1><span>ADVENTURE</span> <strong>CITY</strong></h1>
+                <p>ROLEPLAY SERVER</p>
+            </div>
+            <p class="acrp-hero-copy" id="acrpHeroCopy"><%- lang('acrp.heroCopy') %></p>
+            <p class="acrp-hero-subcopy" id="acrpHeroSubcopy"><%- lang('acrp.heroSubcopy') %></p>
+
+            <div class="acrp-feature-row">
+                <span>AC Economy</span>
+                <span>Integrity Check</span>
+                <span>Auto Updates</span>
+                <span>Cocricot RP</span>
+            </div>
+
+            <div id="launch_content" class="acrp-launch-wrap">
+                <button id="launch_button"><%- lang('landing.launchButton') %></button>
+            </div>
+            <small class="acrp-launch-note">يفحص التحديثات ويجهز الريسورس باك تلقائيا قبل تشغيل اللعبة</small>
+
+            <div class="acrp-stat-row">
+                <div class="acrp-stat">
+                    <svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8ZM2 20a6 6 0 0 1 12 0v1H2zm10.5 1v-1a7.4 7.4 0 0 0-1.4-4.3A6 6 0 0 1 22 20v1z"/></svg>
+                    <div><span><%- lang('acrp.playersNow') %></span><strong id="acrpStatPlayers">--/--</strong><small id="acrpStatPlayersText"><%- lang('landing.serverStatusPlaceholder') %></small></div>
+                </div>
+                <div class="acrp-stat">
+                    <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm0 4.2 5 1.9V11c0 3.6-2.1 7-5 8.2A9 9 0 0 1 7 11V8.1z"/></svg>
+                    <div><span><%- lang('acrp.serverState') %></span><strong id="acrpStatServerStatus"><%- lang('landing.serverStatusPlaceholder') %></strong><small id="acrpStatServerAddress"><%- lang('acrp.serverAddressPending') %></small></div>
+                </div>
+                <div class="acrp-stat">
+                    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v5l4 2-.9 1.8L11 13V7z"/></svg>
+                    <div><span><%- lang('acrp.latestUpdate') %></span><strong id="acrpLatestUpdateTitle">--</strong><small id="acrpLatestUpdateDate"><%- lang('acrp.noUpdateYet') %></small></div>
+                </div>
+            </div>
+
+            <div class="acrp-gallery" id="acrpGallery"></div>
+        </section>
+
+        <section class="acrp-section-view" id="acrpStaffView" hidden>
+            <header class="acrp-view-head">
+                <span class="acrp-view-eyebrow">ACRP / ADVENTURE CITY</span>
+                <h2 id="acrpStaffTitle">فريق الإدارة</h2>
+                <p id="acrpStaffText"></p>
+            </header>
+            <div class="acrp-roster-grid" id="acrpStaffList"></div>
+            <div class="acrp-content-empty" id="acrpStaffEmpty">
+                <strong>الإعلان عن الفريق قريبا</strong>
+                <span>تابع ديسكورد Adventure City لمعرفة آخر الأخبار الإدارية.</span>
+            </div>
+        </section>
+
+        <section class="acrp-section-view" id="acrpRulesView" hidden>
+            <header class="acrp-view-head">
+                <span class="acrp-view-eyebrow">ACRP / ADVENTURE CITY</span>
+                <h2 id="acrpRulesTitle">قوانين Adventure City</h2>
+                <p id="acrpRulesText"></p>
+            </header>
+            <ol class="acrp-rules-list" id="acrpRulesList"></ol>
+            <div class="acrp-rules-extra">
+                <button id="acrpRulesPdfBtn" type="button" class="acrp-action-link">
+                    <%- lang('acrp.downloadRulesPdf') %>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <aside class="acrp-rightbar">
+        <section class="acrp-panel">
+            <div class="acrp-panel-title">
+                <div><span class="acrp-dot"></span><%- lang('acrp.serverState') %></div>
+                <strong id="acrpRightStatusText"><%- lang('landing.serverStatusPlaceholder') %></strong>
+            </div>
+            <div class="acrp-info-list">
+                <div><span><%- lang('acrp.serverAddress') %></span><strong id="acrpServerAddress"><%- lang('acrp.serverAddressPending') %></strong></div>
+                <div><span><%- lang('acrp.version') %></span><strong id="acrpVersionText">1.12.2 - Forge 14.23.5.2860</strong></div>
+                <div id="server_status_wrapper">
+                    <span id="landingPlayerLabel"><%- lang('landing.serverStatus') %></span>
+                    <strong id="player_count"><%- lang('landing.serverStatusPlaceholder') %></strong>
+                </div>
+                <div id="mojangStatusWrapper">
+                    <span>Mojang</span>
+                    <strong id="mojang_status_icon">&#8226;</strong>
+                    <div id="mojangStatusTooltip">
+                        <div id="mojangStatusTooltipTitle"><%- lang('landing.mojangStatusTooltipTitle') %></div>
+                        <div id="mojangStatusEssentialContainer"></div>
+                        <div id="mojangStatusNEContainer">
+                            <div class="mojangStatusNEBar"></div>
+                            <div id="mojangStatusNETitle"><%- lang('landing.mojangStatusNETitle') %></div>
+                            <div class="mojangStatusNEBar"></div>
+                        </div>
+                        <div id="mojangStatusNonEssentialContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="acrp-panel acrp-news-preview">
+            <div class="acrp-panel-title">
+                <div><%- lang('acrp.navNews') %></div>
+                <button id="newsPreviewButton" type="button"><%- lang('acrp.viewAll') %></button>
+            </div>
+            <div id="acrpNewsPreviewList" class="acrp-news-list"></div>
+            <div class="acrp-empty-news" id="acrpNewsPreviewEmpty">
+                <strong><%- lang('acrp.newsEmptyTitle') %></strong>
+                <span><%- lang('acrp.newsEmptyText') %></span>
+            </div>
+        </section>
+
+        <section class="acrp-discord-card">
+            <div>
+                <strong id="acrpDiscordTitle"><%- lang('acrp.discordTitle') %></strong>
+                <span id="acrpDiscordText"><%- lang('acrp.discordText') %></span>
+            </div>
+            <a href="<%- lang('landing.mediaDiscordURL') %>" class="mediaURL"><%- lang('acrp.discordJoin') %></a>
+        </section>
+    </aside>
+
+    <footer class="acrp-downloadbar">
+        <div class="acrp-server-picker">
+            <span><%- lang('acrp.currentServer') %></span>
+            <button id="server_selection_button" type="button"><%- lang('landing.launchButtonPlaceholder') %></button>
+        </div>
+        <div id="acrpReadyState" class="acrp-ready-state">
+            <span><%- lang('acrp.ready') %></span>
+            <strong><%- lang('acrp.integrityEnabled') %></strong>
+        </div>
+        <div id="launch_details">
+            <div id="launch_details_left">
+                <span id="launch_progress_label">0%</span>
+            </div>
+            <div id="launch_details_right">
+                <span id="launch_details_text" class="bot_label"><%- lang('landing.launchDetails') %></span>
+                <progress id="launch_progress" value="0" max="100"></progress>
+            </div>
+        </div>
+        <button class="acrp-stop-button" id="acrpStopButton" type="button" disabled><%- lang('acrp.stop') %></button>
+    </footer>
+
+    <div id="newsContainer">
+        <button id="acrpNewsClose" type="button" aria-label="إغلاق الأخبار" title="إغلاق الأخبار">&times;</button>
+        <div id="newsContent" article="-1" style="display: none;">
+            <div id="newsStatusContainer">
+                <div id="newsStatusContent">
+                    <div id="newsTitleContainer">
+                        <a id="newsArticleTitle" href="#">News</a>
+                    </div>
+                    <div id="newsMetaContainer">
+                        <div id="newsArticleDateWrapper">
+                            <span id="newsArticleDate">May 22, 2026</span>
+                        </div>
+                        <div id="newsArticleAuthorWrapper">
+                            <span id="newsArticleAuthor">by Adventure City</span>
+                        </div>
+                        <a href="#" id="newsArticleComments">0 Comments</a>
+                    </div>
+                </div>
+                <div id="newsNavigationContainer">
+                    <button id="newsNavigateLeft" type="button">&lsaquo;</button>
+                    <span id="newsNavigationStatus"><%- lang('landing.newsNavigationStatus', { currentPage: 1, totalPages: 1 }) %></span>
+                    <button id="newsNavigateRight" type="button">&rsaquo;</button>
+                </div>
+            </div>
+            <div id="newsArticleContainer">
+                <div id="newsArticleContent">
+                    <div id="newsArticleContentScrollable"></div>
+                </div>
+            </div>
+        </div>
+        <div id="newsErrorContainer">
+            <div id="newsErrorLoading">
+                <span id="nELoadSpan" class="newsErrorContent"><%- lang('landing.newsErrorLoadSpan') %></span>
+            </div>
+            <div id="newsErrorFailed" style="display: none;">
+                <span id="nEFailedSpan" class="newsErrorContent"><%- lang('landing.newsErrorFailedSpan') %></span>
+                <button id="newsErrorRetry" type="button"><%- lang('landing.newsErrorRetryButton') %></button>
+            </div>
+            <div id="newsErrorNone" style="display: none;">
+                <span id="nENoneSpan" class="newsErrorContent"><%- lang('landing.newsErrorNoneSpan') %></span>
+            </div>
+        </div>
+    </div>
+    <script src="./assets/js/scripts/landing.js"></script>
+</div>

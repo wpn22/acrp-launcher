@@ -1,0 +1,23 @@
+<div id="termsContainer" class="acrp-overlay-full" style="display: none;">
+    <div class="acrp-overlay-backdrop"></div>
+    <div class="acrp-terms-box">
+        <div class="acrp-terms-header">
+            <img src="assets/images/acrp-logo.jpg" alt="ACRP">
+            <h2><%= lang('terms.title') %></h2>
+            <p><%= lang('terms.subtitle') %></p>
+        </div>
+        <div class="acrp-terms-body" id="acrpTermsBody">
+            <div class="acrp-terms-scroll" id="acrpTermsScroll">
+                <ol id="acrpTermsList"></ol>
+            </div>
+            <label class="acrp-terms-check">
+                <input type="checkbox" id="acrpTermsCheckbox">
+                <span><%= lang('terms.agree') %></span>
+            </label>
+        </div>
+        <div class="acrp-terms-actions">
+            <button class="acrp-terms-decline" id="acrpTermsDecline"><%= lang('terms.decline') %></button>
+            <button class="acrp-terms-accept" id="acrpTermsAccept" disabled><%= lang('terms.accept') %></button>
+        </div>
+    </div>
+</div>

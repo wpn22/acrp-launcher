@@ -1,0 +1,123 @@
+{
+    "generatedAt": "2026-05-23T15:09:41.657Z",
+    "packName": "AcRp",
+    "sourceInstance": "C:\\Users\\wpn\\curseforge\\minecraft\\Instances\\‏‏AcRp - نسخة",
+    "metadataInstance": "C:\\Users\\wpn\\curseforge\\minecraft\\Instances\\AcRp",
+    "fileBaseUrl": "http://127.0.0.1:38412/AcRp",
+    "minecraftVersion": "1.12.2",
+    "forgeVersion": "14.23.5.2860",
+    "serverId": "AcRp",
+    "included": {
+        "files": 4702,
+        "bytes": 1830548137,
+        "topLevel": {
+            "AcRp.ico": {
+                "files": 1,
+                "bytes": 383145
+            },
+            "config": {
+                "files": 60,
+                "bytes": 110838
+            },
+            "customnpcs": {
+                "files": 1,
+                "bytes": 4
+            },
+            "disabled-crashfix": {
+                "files": 565,
+                "bytes": 715221075
+            },
+            "DxClient": {
+                "files": 6,
+                "bytes": 27312853
+            },
+            "DynamX": {
+                "files": 178,
+                "bytes": 18132434
+            },
+            "essential": {
+                "files": 2680,
+                "bytes": 129555057
+            },
+            "fonts": {
+                "files": 2,
+                "bytes": 57975
+            },
+            "jcef": {
+                "files": 76,
+                "bytes": 243684644
+            },
+            "mods": {
+                "files": 46,
+                "bytes": 321353981
+            },
+            "ModularWarfare": {
+                "files": 1085,
+                "bytes": 332563979
+            },
+            "resourcepacks": {
+                "files": 1,
+                "bytes": 42172148
+            },
+            "scripts": {
+                "files": 1,
+                "bytes": 4
+            }
+        }
+    },
+    "excluded": {
+        "files": 1001,
+        "examples": [
+            ".curseclient",
+            "jcef/cache/000003.log",
+            "jcef/cache/Cache/Cache_Data/data_0",
+            "jcef/cache/Cache/Cache_Data/data_1",
+            "jcef/cache/Cache/Cache_Data/data_2",
+            "jcef/cache/Cache/Cache_Data/data_3",
+            "jcef/cache/Cache/Cache_Data/f_000001",
+            "jcef/cache/Cache/Cache_Data/f_000002",
+            "jcef/cache/Cache/Cache_Data/f_000003",
+            "jcef/cache/Cache/Cache_Data/f_000004",
+            "jcef/cache/Cache/Cache_Data/f_000005",
+            "jcef/cache/Cache/Cache_Data/f_000006",
+            "jcef/cache/Cache/Cache_Data/f_000007",
+            "jcef/cache/Cache/Cache_Data/f_000008",
+            "jcef/cache/Cache/Cache_Data/f_000009",
+            "jcef/cache/Cache/Cache_Data/f_00000a",
+            "jcef/cache/Cache/Cache_Data/f_00000b",
+            "jcef/cache/Cache/Cache_Data/f_00000c",
+            "jcef/cache/Cache/Cache_Data/f_00000d",
+            "jcef/cache/Cache/Cache_Data/f_00000e",
+            "jcef/cache/Cache/Cache_Data/f_00000f",
+            "jcef/cache/Cache/Cache_Data/f_000010",
+            "jcef/cache/Cache/Cache_Data/f_000011",
+            "jcef/cache/Cache/Cache_Data/index",
+            "jcef/cache/Code Cache/js/007d9210f698bfa5_0",
+            "jcef/cache/Code Cache/js/010b4d366458fa8d_0",
+            "jcef/cache/Code Cache/js/013591feae9a2c9e_0",
+            "jcef/cache/Code Cache/js/01a76b0969754ad0_0",
+            "jcef/cache/Code Cache/js/0212137703d1279c_0",
+            "jcef/cache/Code Cache/js/02435944e44171ea_0",
+            "jcef/cache/Code Cache/js/02c06c14a6955172_0",
+            "jcef/cache/Code Cache/js/038bd80084a18e7d_0",
+            "jcef/cache/Code Cache/js/0421904c71487716_0",
+            "jcef/cache/Code Cache/js/042e04e2b00b048d_0",
+            "jcef/cache/Code Cache/js/04d6c0045af28455_0",
+            "jcef/cache/Code Cache/js/04fd8a3075089504_0",
+            "jcef/cache/Code Cache/js/0597aabca8a217d6_0",
+            "jcef/cache/Code Cache/js/05aaa53c1d105e4a_0",
+            "jcef/cache/Code Cache/js/05faed9d4c005456_0",
+            "jcef/cache/Code Cache/js/060bff92b7ab8615_0",
+            "jcef/cache/Code Cache/js/06d2e37922114342_0",
+            "jcef/cache/Code Cache/js/06f71b3c1d5ffac4_0",
+            "jcef/cache/Code Cache/js/0783dbdf5caf69af_0",
+            "jcef/cache/Code Cache/js/0a5a03a79a8166d0_0",
+            "jcef/cache/Code Cache/js/0af53c509be1613f_0",
+            "jcef/cache/Code Cache/js/0b35a46b9150712b_0",
+            "jcef/cache/Code Cache/js/0b5eba2bb3c4aacb_0",
+            "jcef/cache/Code Cache/js/0b64259791e5cc2e_0",
+            "jcef/cache/Code Cache/js/0c5b1a8fe2921c35_0",
+            "jcef/cache/Code Cache/js/0d690c293062b9b5_0"
+        ]
+    }
+}

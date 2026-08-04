@@ -1,0 +1,8 @@
+/node_modules/
+/.vs/
+/.vscode/
+/target/
+/logs/
+/dist/
+/.npm-cache/
+/.npm-logs/

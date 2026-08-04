@@ -1,0 +1,53 @@
+appId: 'com.adventurecity.acrplauncher'
+productName: 'ACRP Launcher'
+artifactName: '${productName}-setup-${version}.${ext}'
+
+copyright: 'Copyright (c) 2026 Adventure City'
+
+asar: true
+compression: 'maximum'
+
+files:
+  - '!{dist,.gitignore,.vscode,docs,dev-app-update.yml,.nvmrc,eslint.config.mjs}'
+
+extraResources:
+  - 'libraries'
+
+# Windows Configuration
+win: 
+  forceCodeSigning: false
+  signAndEditExecutable: false
+  target: 
+    - target: 'nsis'
+      arch: 'x64'
+
+# Windows Installer Configuration
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+
+# macOS Configuration
+mac:
+  target:
+    - target: 'dmg'
+      arch:
+        - 'x64'
+        - 'arm64'
+  artifactName: '${productName}-setup-${version}-${arch}.${ext}'
+  category: 'public.app-category.games'
+
+# Linux Configuration
+linux: 
+  target: 'AppImage'
+  maintainer: 'Adventure City'
+  vendor: 'Adventure City'
+  synopsis: 'Adventure City Roleplay Launcher'
+  description: 'Custom launcher for Adventure City Roleplay. Mods, configuration, Java, and updates are handled automatically.'
+  category: 'Game'
+
+
+directories:
+  buildResources: 'build'
+  output: 'dist'
