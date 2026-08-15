@@ -28,7 +28,7 @@ public class ItemPhone extends Item {
 
     public ItemPhone() {
         setRegistryName(ACRPPhone.MOD_ID, "phone");
-        setUnlocalizedName(ACRPPhone.MOD_ID + ".phone");
+        setTranslationKey(ACRPPhone.MOD_ID + ".phone");
         setCreativeTab(ModItems.TAB);
         setMaxStackSize(1);
     }

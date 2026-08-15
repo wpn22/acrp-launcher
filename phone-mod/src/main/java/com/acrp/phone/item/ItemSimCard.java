@@ -24,7 +24,7 @@ public class ItemSimCard extends Item {
 
     public ItemSimCard() {
         setRegistryName(ACRPPhone.MOD_ID, "sim_card");
-        setUnlocalizedName(ACRPPhone.MOD_ID + ".sim_card");
+        setTranslationKey(ACRPPhone.MOD_ID + ".sim_card");
         setCreativeTab(ModItems.TAB);
         setMaxStackSize(1);
     }

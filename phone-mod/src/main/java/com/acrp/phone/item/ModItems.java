@@ -21,7 +21,7 @@ public final class ModItems {
 
     public static final CreativeTabs TAB = new CreativeTabs(ACRPPhone.MOD_ID) {
         @Override
-        public ItemStack getTabIconItem() {
+        public ItemStack createIcon() {
             return PHONE == null ? ItemStack.EMPTY : new ItemStack(PHONE);
         }
     };
