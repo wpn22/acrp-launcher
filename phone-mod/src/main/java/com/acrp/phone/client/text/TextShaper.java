@@ -101,13 +101,20 @@ public final class TextShaper {
     private ShapedText shapeUncached(String text) {
         char[] chars = text.toCharArray();
 
-        // Fast path: nothing bidirectional in here, so one straight LTR layout.
+        // Fast path: no RTL characters, so a single left-to-right layout places the
+        // glyphs correctly.
         if (!Bidi.requiresBidi(chars, 0, chars.length)) {
             GlyphVector gv = font.layoutGlyphVector(
                     frc, chars, 0, chars.length, Font.LAYOUT_LEFT_TO_RIGHT);
             List<ShapedGlyph> out = new ArrayList<ShapedGlyph>(gv.getNumGlyphs());
             float width = append(out, gv, 0f, 0, false);
-            return new ShapedText(out, width, false, chars.length);
+            // The glyph order is settled, but the paragraph direction is not: a
+            // string of only digits or punctuation has no strong character, so it
+            // inherits the configured default. That is what decides which edge it
+            // aligns to — a clock reading "9:41" belongs on the right in an Arabic
+            // UI, and reporting LTR here pushes it off the screen.
+            return new ShapedText(out, width, defaultsToRtl() && !hasStrongLtr(chars),
+                    chars.length);
         }
 
         Bidi bidi = new Bidi(text, baseDirection);
@@ -149,6 +156,22 @@ public final class TextShaper {
             penX = append(out, gv, penX, start, rtl);
         }
         return new ShapedText(out, penX, baseRtl, chars.length);
+    }
+
+    /** Whether this shaper falls back to RTL when a string has no strong character. */
+    private boolean defaultsToRtl() {
+        return baseDirection == Bidi.DIRECTION_DEFAULT_RIGHT_TO_LEFT
+                || baseDirection == Bidi.DIRECTION_RIGHT_TO_LEFT;
+    }
+
+    /** True if any character is strongly left-to-right, which pins the direction. */
+    private static boolean hasStrongLtr(char[] chars) {
+        for (char c : chars) {
+            if (Character.getDirectionality(c) == Character.DIRECTIONALITY_LEFT_TO_RIGHT) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

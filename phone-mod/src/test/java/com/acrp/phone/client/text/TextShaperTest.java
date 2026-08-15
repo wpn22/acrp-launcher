@@ -131,6 +131,36 @@ public class TextShaperTest {
         assertEquals("cache must return identical metrics", first, second, 0.0f);
     }
 
+    /**
+     * A string with no strong character — a clock, a bare number — inherits the
+     * paragraph direction. Reporting LTR for these in an Arabic UI aligns them to
+     * the wrong edge, which pushed the status bar clock off the screen.
+     */
+    @Test
+    public void neutralOnlyTextInheritsTheBaseDirection() {
+        assertTrue("digits in an Arabic UI must resolve RTL",
+                TextShaper.arabic(font).shape("9:41").isBaseRtl());
+        assertFalse("digits in a Latin UI must resolve LTR",
+                TextShaper.latin(font).shape("9:41").isBaseRtl());
+    }
+
+    /** A strong Latin character pins the direction regardless of the default. */
+    @Test
+    public void strongLatinOverridesAnArabicDefault() {
+        assertFalse(TextShaper.arabic(font).shape("ACRP 2026").isBaseRtl());
+    }
+
+    @Test
+    public void neutralTextStillLaysOutDigitsLeftToRight() {
+        // Direction affects alignment, not the digit order itself.
+        ShapedText s = TextShaper.arabic(font).shape("9:41");
+        float prevX = -Float.MAX_VALUE;
+        for (ShapedGlyph g : s.glyphs()) {
+            assertTrue(g.x >= prevX - 0.01f);
+            prevX = g.x;
+        }
+    }
+
     @Test
     public void mixedArabicLatinDoesNotLoseGlyphs() {
         ShapedText s = TextShaper.arabic(font).shape("مرحبا ACRP اهلا");
