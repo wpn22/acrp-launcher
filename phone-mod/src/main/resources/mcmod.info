@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "acrpphone",
+    "name": "ACRP Phone",
+    "description": "جوال Adventure City Roleplay — رسائل ومكالمات وتطبيقات بواجهة عربية كاملة.\nAn in-game phone for Adventure City Roleplay, with a real Arabic text engine (contextual shaping + bidirectional layout).",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "authorList": [
+      "Adventure City Roleplay"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
