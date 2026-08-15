@@ -1,0 +1,9 @@
+itemGroup.acrpphone=جوال ACRP
+
+item.acrpphone.phone.name=جوال
+item.acrpphone.phone.no_sim=لا توجد شريحة
+
+item.acrpphone.sim_card.name=شريحة
+item.acrpphone.sim_card.blank=شريحة فارغة
+item.acrpphone.sim_card.registered=مسجّلة
+item.acrpphone.sim_card.burner=غير مسجّلة

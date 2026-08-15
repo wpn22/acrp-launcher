@@ -72,10 +72,6 @@
 
 ### إثبات بصري
 
-![مقارنة الطريقة البديهية بالمحرك](docs/text-proof.png)
-
-الأحمر = الطريقة البديهية (معطوبة) · الأسود = المحرك (صحيح)
-
 ```bash
 java -cp build/classes:build/testclasses:... \
      com.acrp.phone.client.text.TextRenderProof proof.png

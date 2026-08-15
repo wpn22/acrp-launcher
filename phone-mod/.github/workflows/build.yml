@@ -27,21 +27,26 @@ jobs:
           curl -sSfL -o build/testlibs/hamcrest.jar \
             https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
 
-      - name: Compile text engine
+      # Only the Minecraft-free sources. PhoneNbt and everything under item/ do
+      # import Forge, so they belong to the slow lane below.
+      - name: Compile Minecraft-free sources
         run: |
           mkdir -p build/classes build/testclasses
           javac -encoding UTF-8 -d build/classes \
-            $(find src/main/java/com/acrp/phone/client/text -name '*.java')
+            $(find src/main/java/com/acrp/phone/client/text -name '*.java') \
+            src/main/java/com/acrp/phone/core/PhoneNumber.java
           javac -encoding UTF-8 \
             -cp "build/classes:build/testlibs/junit.jar:build/testlibs/hamcrest.jar" \
             -d build/testclasses \
-            $(find src/test/java/com/acrp/phone/client/text -name '*.java')
+            $(find src/test/java -name '*.java')
 
-      - name: Run text engine tests
+      - name: Run tests
         run: |
           java -Dfile.encoding=UTF-8 \
             -cp "build/classes:build/testclasses:build/testlibs/junit.jar:build/testlibs/hamcrest.jar" \
-            org.junit.runner.JUnitCore com.acrp.phone.client.text.TextShaperTest
+            org.junit.runner.JUnitCore \
+            com.acrp.phone.client.text.TextShaperTest \
+            com.acrp.phone.core.PhoneNumberTest
 
       - name: Render visual proof
         run: |

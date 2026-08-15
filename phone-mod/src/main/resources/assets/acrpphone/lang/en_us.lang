@@ -1,0 +1,9 @@
+itemGroup.acrpphone=ACRP Phone
+
+item.acrpphone.phone.name=Phone
+item.acrpphone.phone.no_sim=No SIM
+
+item.acrpphone.sim_card.name=SIM Card
+item.acrpphone.sim_card.blank=Blank SIM
+item.acrpphone.sim_card.registered=Registered
+item.acrpphone.sim_card.burner=Unregistered
