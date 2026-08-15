@@ -1,0 +1,42 @@
+{
+  "unlock": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:unlock", "stream": false }]
+  },
+  "lock": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:lock", "stream": false }]
+  },
+  "key_press": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:key_press", "stream": false }]
+  },
+  "notification": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:notification", "stream": false }]
+  },
+  "message_sent": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:message_sent", "stream": false }]
+  },
+  "face_ok": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:face_ok", "stream": false }]
+  },
+  "face_fail": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:face_fail", "stream": false }]
+  },
+  "shutter": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:shutter", "stream": false }]
+  },
+  "call_end": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:call_end", "stream": false }]
+  },
+  "ring": {
+    "category": "player",
+    "sounds": [{ "name": "acrpphone:ring", "stream": false }]
+  }
+}
