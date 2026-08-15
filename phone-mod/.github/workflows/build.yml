@@ -34,6 +34,7 @@ jobs:
           mkdir -p build/classes build/testclasses
           javac -encoding UTF-8 -d build/classes \
             $(find src/main/java/com/acrp/phone/client/text -name '*.java') \
+            src/main/java/com/acrp/phone/client/font/AtlasPacker.java \
             src/main/java/com/acrp/phone/core/PhoneNumber.java
           javac -encoding UTF-8 \
             -cp "build/classes:build/testlibs/junit.jar:build/testlibs/hamcrest.jar" \
@@ -46,6 +47,8 @@ jobs:
             -cp "build/classes:build/testclasses:build/testlibs/junit.jar:build/testlibs/hamcrest.jar" \
             org.junit.runner.JUnitCore \
             com.acrp.phone.client.text.TextShaperTest \
+            com.acrp.phone.client.text.TextLayoutTest \
+            com.acrp.phone.client.font.AtlasPackerTest \
             com.acrp.phone.core.PhoneNumberTest
 
       - name: Render visual proof

@@ -36,7 +36,7 @@ public final class TextShaper {
     private static final int CACHE_CAPACITY = 512;
 
     private static final ShapedText EMPTY =
-            new ShapedText(Collections.<ShapedGlyph>emptyList(), 0f, false);
+            new ShapedText(Collections.<ShapedGlyph>emptyList(), 0f, false, 0);
 
     private final Font font;
     private final FontRenderContext frc;
@@ -105,7 +105,9 @@ public final class TextShaper {
         if (!Bidi.requiresBidi(chars, 0, chars.length)) {
             GlyphVector gv = font.layoutGlyphVector(
                     frc, chars, 0, chars.length, Font.LAYOUT_LEFT_TO_RIGHT);
-            return collect(gv, 0f, false);
+            List<ShapedGlyph> out = new ArrayList<ShapedGlyph>(gv.getNumGlyphs());
+            float width = append(out, gv, 0f, 0, false);
+            return new ShapedText(out, width, false, chars.length);
         }
 
         Bidi bidi = new Bidi(text, baseDirection);
@@ -116,7 +118,9 @@ public final class TextShaper {
             boolean rtl = (bidi.getRunLevel(0) & 1) != 0;
             GlyphVector gv = font.layoutGlyphVector(frc, chars, 0, chars.length,
                     rtl ? Font.LAYOUT_RIGHT_TO_LEFT : Font.LAYOUT_LEFT_TO_RIGHT);
-            return collect(gv, 0f, baseRtl);
+            List<ShapedGlyph> out = new ArrayList<ShapedGlyph>(gv.getNumGlyphs());
+            float width = append(out, gv, 0f, 0, rtl);
+            return new ShapedText(out, width, baseRtl, chars.length);
         }
 
         int runCount = bidi.getRunCount();
@@ -142,31 +146,29 @@ public final class TextShaper {
             // letters stay joined across the boundary.
             GlyphVector gv = font.layoutGlyphVector(frc, chars, start, limit,
                     rtl ? Font.LAYOUT_RIGHT_TO_LEFT : Font.LAYOUT_LEFT_TO_RIGHT);
-            penX = append(out, gv, penX);
+            penX = append(out, gv, penX, start, rtl);
         }
-        return new ShapedText(out, penX, baseRtl);
-    }
-
-    /** Collects a single vector that already starts at {@code originX}. */
-    private ShapedText collect(GlyphVector gv, float originX, boolean baseRtl) {
-        List<ShapedGlyph> out = new ArrayList<ShapedGlyph>(gv.getNumGlyphs());
-        float width = append(out, gv, originX);
-        return new ShapedText(out, width, baseRtl);
+        return new ShapedText(out, penX, baseRtl, chars.length);
     }
 
     /**
      * Appends {@code gv}'s glyphs shifted by {@code originX}.
      *
+     * @param runStart index in the original string where this run begins; glyph
+     *                 char indices come back relative to it
      * @return the pen X after this vector, i.e. {@code originX + advance}
      */
-    private float append(List<ShapedGlyph> out, GlyphVector gv, float originX) {
+    private float append(List<ShapedGlyph> out, GlyphVector gv, float originX,
+                         int runStart, boolean rtl) {
         int n = gv.getNumGlyphs();
         // Ask for n+1 entries: the extra trailing pair is the position *after* the
         // last glyph, i.e. the run's total advance. Requesting only n loses it.
         float[] pos = gv.getGlyphPositions(0, n + 1, null);
         for (int i = 0; i < n; i++) {
-            out.add(new ShapedGlyph(gv.getGlyphCode(i),
-                    originX + pos[i * 2], pos[i * 2 + 1]));
+            float x = originX + pos[i * 2];
+            float advance = pos[(i + 1) * 2] - pos[i * 2];
+            out.add(new ShapedGlyph(gv.getGlyphCode(i), x, pos[i * 2 + 1],
+                    advance, runStart + gv.getGlyphCharIndex(i), rtl));
         }
         return originX + pos[n * 2];
     }
