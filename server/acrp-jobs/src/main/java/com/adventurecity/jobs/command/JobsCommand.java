@@ -11,7 +11,6 @@ import com.adventurecity.jobs.ui.ContractMenu;
 import com.adventurecity.jobs.ui.JobCenterMenu;
 import com.adventurecity.jobs.ui.MyJobMenu;
 import com.adventurecity.jobs.util.Msg;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -169,10 +168,5 @@ public final class JobsCommand implements CommandExecutor, TabCompleter {
             }
         }
         return out;
-    }
-
-    /** Shared by several commands: strips colour so console output stays readable. */
-    static String plain(String input) {
-        return ChatColor.stripColor(Msg.color(input));
     }
 }

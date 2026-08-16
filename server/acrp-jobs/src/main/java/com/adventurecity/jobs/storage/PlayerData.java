@@ -1,25 +1,27 @@
 package com.adventurecity.jobs.storage;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** In-memory state of one player. Loaded on join, flushed asynchronously, saved on quit. */
 public final class PlayerData {
 
     private final UUID uuid;
-    private String name;
-    private long balance;
-    private String currentJob;
-    private boolean onDuty;
-    private final Map<String, JobProgress> jobs = new HashMap<String, JobProgress>();
+    private volatile String name;
+    // Written on the server thread, read by the IO thread while saving - hence volatile, and a
+    // concurrent map so a player joining a job mid-save cannot break the save loop.
+    private volatile long balance;
+    private volatile String currentJob;
+    private volatile boolean onDuty;
+    private final Map<String, JobProgress> jobs = new ConcurrentHashMap<String, JobProgress>();
 
     /** Earnings counted against the daily cap, plus the day they belong to (epoch day, UTC). */
     private long earnedToday;
     private long earnedDay;
 
-    private boolean dirty;
+    private volatile boolean dirty;
 
     /** Runtime only - minutes accumulated toward the next payroll tick. Never persisted. */
     private int dutyMinutes;
@@ -85,7 +87,7 @@ public final class PlayerData {
     }
 
     public void removeJob(String jobId) {
-        if (jobs.remove(jobId) != null) {
+        if (jobId != null && jobs.remove(jobId) != null) {
             this.dirty = true;
         }
     }
@@ -99,7 +101,7 @@ public final class PlayerData {
     }
 
     public boolean hasJob(String jobId) {
-        return jobs.containsKey(jobId);
+        return jobId != null && jobs.containsKey(jobId);
     }
 
     /** Current progress in the job the player is actively working, or null. */

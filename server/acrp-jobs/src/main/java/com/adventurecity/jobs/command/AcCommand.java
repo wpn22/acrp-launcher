@@ -2,7 +2,6 @@ package com.adventurecity.jobs.command;
 
 import com.adventurecity.jobs.ACRPJobsPlugin;
 import com.adventurecity.jobs.storage.TxType;
-import com.adventurecity.jobs.util.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -264,10 +263,5 @@ public final class AcCommand implements CommandExecutor, TabCompleter {
             }
         }
         return out;
-    }
-
-    /** Kept for symmetry with other commands that colour console output. */
-    static String colour(String input) {
-        return Msg.color(input);
     }
 }

@@ -170,6 +170,12 @@ public final class ContractEngine {
             plugin.msg().send(player, "contract.confirm-nothing");
             return;
         }
+        // Without this, confirming in the split second after the passenger disconnects would pay a
+        // fare for a ride nobody took.
+        if (step.targetPlayer() && contract.dispatchPlayer() != null && passenger(contract) == null) {
+            passengerGone(player, contract);
+            return;
+        }
         Location target = targetLocation(contract);
         double radius = radiusOf(contract, step);
         if (target != null && !within(player.getLocation(), target, radius)) {
