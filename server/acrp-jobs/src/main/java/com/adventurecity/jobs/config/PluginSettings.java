@@ -44,6 +44,13 @@ public final class PluginSettings {
     public final String vehicleSpawnCommand;
     public final String vehicleDespawnCommand;
 
+    public final boolean aiEnabled;
+    public final String aiUrl;
+    public final String aiToken;
+    public final int aiTimeoutMs;
+    public final int aiConversationSeconds;
+    public final double aiConversationRange;
+
     public PluginSettings(FileConfiguration config) {
         storageType = config.getString("storage.type", "sqlite").toLowerCase();
         mysqlHost = config.getString("storage.mysql.host", "127.0.0.1");
@@ -83,6 +90,13 @@ public final class PluginSettings {
         vehiclesEnabled = config.getBoolean("integration.vehicles.enabled", false);
         vehicleSpawnCommand = config.getString("integration.vehicles.spawnCommand", "");
         vehicleDespawnCommand = config.getString("integration.vehicles.despawnCommand", "");
+
+        aiEnabled = config.getBoolean("ai.enabled", false);
+        aiUrl = config.getString("ai.url", "http://127.0.0.1:8787/dialogue");
+        aiToken = config.getString("ai.token", "");
+        aiTimeoutMs = Math.max(1000, config.getInt("ai.timeoutMs", 8000));
+        aiConversationSeconds = Math.max(15, config.getInt("ai.conversationSeconds", 90));
+        aiConversationRange = Math.max(2.0D, config.getDouble("ai.conversationRange", 12.0D));
     }
 
     public boolean isMysql() {

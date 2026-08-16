@@ -117,6 +117,12 @@ public final class Msg {
         return out;
     }
 
+    /** Colour codes removed - for text that goes into a prompt, a log, or the console. */
+    public static String plain(String input) {
+        String stripped = ChatColor.stripColor(color(input));
+        return stripped == null ? "" : stripped;
+    }
+
     /** 12500 -> "12,500" */
     public static String number(long value) {
         synchronized (NUMBER) {

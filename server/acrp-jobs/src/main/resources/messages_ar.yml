@@ -86,6 +86,27 @@ taxi:
   ride-started: "&aالراكب معك. وصّله لوجهته ثم اكتب &f/jobs confirm"
   cancel-open: "&cما عندك طلب مفتوح."
 
+npc:
+  line: "&e%npc%&7: &f%text%"
+  thinking: "&8%npc% يفكر..."
+  started: "&7أنت الآن في محادثة. اكتب كلامك عادي في الشات، و &f/talk end &7للخروج."
+  ended: "&7انتهت المحادثة."
+  not-talking: "&cما أنت في محادثة حالياً."
+  busy: "&cأنت أصلاً في محادثة. اكتب &f/talk end &cأول."
+  timeout: "&7انتهت المحادثة لعدم الرد."
+  too-far: "&7ابتعدت كثير، انتهت المحادثة."
+  unknown: "&cما فيه شخصية بهذا الاسم."
+  no-answer: "&8%npc% ما رد عليك. جرّب مرة ثانية."
+  job-offer: "&a➜ عرض عليك وظيفة &f%job%"
+  contract-offer: "&a➜ عرض عليك مهمة &f%contract%"
+  zone-hint: "&7%zone% على بعد &f%distance% &7بلوك — تابع العلامة."
+  linked: "&aتم ربط الشخصية &f%npc% &aبالكيان &f%entity%"
+  unlinked: "&eتم فك ربط الشخصية &f%npc%"
+  look-at-npc: "&cقف قدام الـ NPC وانظر له ثم أعد الأمر."
+  no-name: "&cهذا الكيان ما عنده اسم ظاهر — لازم يكون له اسم عشان نربطه."
+  list-header: "&b&lشخصيات المدينة (&f%count%&b)"
+  list-line: "&7- &f%npc% &8(&7%name%&8) &7مرتبط بـ: &f%entity%"
+
 admin:
   zone-set: "&aتم حفظ المنطقة &f%zone% &a(نصف القطر: &f%radius%&a)"
   zone-deleted: "&aتم حذف المنطقة &f%zone%"

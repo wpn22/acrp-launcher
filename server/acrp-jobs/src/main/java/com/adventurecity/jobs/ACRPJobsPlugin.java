@@ -1,11 +1,15 @@
 package com.adventurecity.jobs;
 
+import com.adventurecity.jobs.ai.AiBridgeClient;
+import com.adventurecity.jobs.ai.DialogueService;
+import com.adventurecity.jobs.ai.NpcRegistry;
 import com.adventurecity.jobs.antiabuse.ActivityTracker;
 import com.adventurecity.jobs.antiabuse.Cooldowns;
 import com.adventurecity.jobs.command.AcCommand;
 import com.adventurecity.jobs.command.DutyCommand;
 import com.adventurecity.jobs.command.JobsAdminCommand;
 import com.adventurecity.jobs.command.JobsCommand;
+import com.adventurecity.jobs.command.TalkCommand;
 import com.adventurecity.jobs.command.TaxiCommand;
 import com.adventurecity.jobs.config.JobRegistry;
 import com.adventurecity.jobs.config.PluginSettings;
@@ -18,6 +22,7 @@ import com.adventurecity.jobs.hud.ObjectiveHud;
 import com.adventurecity.jobs.job.DutyManager;
 import com.adventurecity.jobs.job.JobManager;
 import com.adventurecity.jobs.job.PayrollTask;
+import com.adventurecity.jobs.listener.NpcListener;
 import com.adventurecity.jobs.listener.PlayerListener;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.storage.SqlStorage;
@@ -58,6 +63,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
     private DutyManager duty;
     private ContractEngine contracts;
     private DispatchService dispatch;
+    private NpcRegistry npcs;
+    private AiBridgeClient aiBridge;
+    private DialogueService dialogue;
 
     private PayrollTask payrollTask;
     private BukkitTask tickTask;
@@ -95,10 +103,15 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         duty = new DutyManager(this);
         contracts = new ContractEngine(this);
         dispatch = new DispatchService(this);
+        npcs = new NpcRegistry(new File(getDataFolder(), "npcs.yml"), getLogger());
+        npcs.load();
+        aiBridge = new AiBridgeClient(this);
+        dialogue = new DialogueService(this);
 
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getServer().getPluginManager().registerEvents(new NpcListener(this), this);
         startTasks();
 
         // /reload or a late install: players are already online and need their data.
@@ -108,7 +121,8 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
 
         getLogger().info("[ACRPJobs] Enabled - " + jobs.all().size() + " job(s), "
-                + zones.all().size() + " zone(s).");
+                + zones.all().size() + " zone(s), " + npcs.all().size() + " npc(s)"
+                + (aiBridge.enabled() ? ", AI dialogue on." : ", AI dialogue off."));
     }
 
     @Override
@@ -128,6 +142,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         if (dispatch != null) {
             dispatch.clear();
         }
+        if (aiBridge != null) {
+            aiBridge.shutdown();
+        }
         if (players != null) {
             players.shutdown();
         }
@@ -138,6 +155,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         saveDefaultConfig();
         if (!new File(getDataFolder(), "messages_ar.yml").isFile()) {
             saveResource("messages_ar.yml", false);
+        }
+        if (!new File(getDataFolder(), "npcs.yml").isFile()) {
+            saveResource("npcs.yml", false);
         }
         File jobFolder = new File(getDataFolder(), "jobs");
         if (!jobFolder.isDirectory() && !jobFolder.mkdirs()) {
@@ -160,6 +180,8 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         bind("taxi", taxiCommand, taxiCommand);
         JobsAdminCommand adminCommand = new JobsAdminCommand(this);
         bind("jobsadmin", adminCommand, adminCommand);
+        TalkCommand talkCommand = new TalkCommand(this);
+        bind("talk", talkCommand, talkCommand);
     }
 
     private void bind(String name, org.bukkit.command.CommandExecutor executor,
@@ -182,6 +204,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
             public void run() {
                 contracts.tick();
                 dispatch.tick();
+                dialogue.tick();
             }
         }, 20L, 10L);
 
@@ -208,6 +231,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         msg.load();
         zones.load();
         jobs.load();
+        npcs.load();
     }
 
     public PluginSettings settings() {
@@ -268,5 +292,17 @@ public final class ACRPJobsPlugin extends JavaPlugin {
 
     public PayrollTask payrollTask() {
         return payrollTask;
+    }
+
+    public NpcRegistry npcs() {
+        return npcs;
+    }
+
+    public AiBridgeClient aiBridge() {
+        return aiBridge;
+    }
+
+    public DialogueService dialogue() {
+        return dialogue;
     }
 }

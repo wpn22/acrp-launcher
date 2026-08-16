@@ -39,6 +39,7 @@ public final class PlayerListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
+        plugin.dialogue().forget(uuid);
         plugin.contracts().abandon(uuid);
         plugin.dispatch().releaseDriver(uuid);
         plugin.hud().clear(player);

@@ -19,9 +19,12 @@ commands:
   taxi:
     description: Call a taxi, or accept a taxi call as a driver
     usage: /taxi call|accept <id>|list|cancel
+  talk:
+    description: Start or end a conversation with a city NPC
+    usage: /talk <npc>|end
   jobsadmin:
-    description: Admin tools - zones, reload, player stats
-    usage: /jobsadmin <zone|reload|stats>
+    description: Admin tools - zones, npcs, reload, player stats
+    usage: /jobsadmin <zone|npc|reload|stats>
     aliases: [jadmin]
 
 permissions:

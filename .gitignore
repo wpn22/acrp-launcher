@@ -9,3 +9,8 @@
 
 # ACRPJobs server plugin (Maven)
 server/acrp-jobs/target/
+
+# ACRPJobs AI bridge (Node)
+server/acrp-ai-bridge/node_modules/
+server/acrp-ai-bridge/logs/
+server/acrp-ai-bridge/config.json

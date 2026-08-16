@@ -3,11 +3,11 @@ name: Build Jobs Plugin
 on:
   push:
     paths:
-      - 'server/acrp-jobs/**'
+      - 'server/**'
       - '.github/workflows/build-plugin.yml'
   pull_request:
     paths:
-      - 'server/acrp-jobs/**'
+      - 'server/**'
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,15 @@ jobs:
       - name: Build plugin
         working-directory: server/acrp-jobs
         run: mvn -B -ntp clean package
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Test AI bridge
+        working-directory: server/acrp-ai-bridge
+        run: node test/run-tests.js
 
       - name: Upload plugin jar
         uses: actions/upload-artifact@v5

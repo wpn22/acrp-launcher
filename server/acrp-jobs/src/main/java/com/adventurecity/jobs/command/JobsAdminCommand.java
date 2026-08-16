@@ -1,6 +1,7 @@
 package com.adventurecity.jobs.command;
 
 import com.adventurecity.jobs.ACRPJobsPlugin;
+import com.adventurecity.jobs.ai.NpcPersona;
 import com.adventurecity.jobs.config.JobDefinition;
 import com.adventurecity.jobs.config.Zone;
 import com.adventurecity.jobs.storage.PlayerData;
@@ -12,7 +13,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +63,101 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return zone(sender, args);
         }
 
+        if ("npc".equals(sub)) {
+            return npc(sender, args);
+        }
+
         help(sender);
         return true;
+    }
+
+    /** Links an npcs.yml persona to whatever NPC entity the admin is looking at. */
+    private boolean npc(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            help(sender);
+            return true;
+        }
+        String action = args[1].toLowerCase();
+
+        if ("list".equals(action)) {
+            sender.sendMessage(plugin.msg().get("npc.list-header", "count", plugin.npcs().all().size()));
+            for (NpcPersona persona : plugin.npcs().all()) {
+                sender.sendMessage(plugin.msg().get("npc.list-line",
+                        "npc", persona.id(),
+                        "name", Msg.plain(persona.name()),
+                        "entity", persona.entityName().isEmpty()
+                                ? "-" : Msg.plain(persona.entityName())));
+            }
+            return true;
+        }
+
+        if (args.length < 3) {
+            plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin npc " + action + " <معرّف>");
+            return true;
+        }
+        NpcPersona persona = plugin.npcs().get(args[2]);
+        if (persona == null) {
+            plugin.msg().send(sender, "npc.unknown");
+            return true;
+        }
+
+        if ("unlink".equals(action)) {
+            persona.entityName("");
+            plugin.npcs().saveLinks();
+            plugin.msg().send(sender, "npc.unlinked", "npc", persona.id());
+            return true;
+        }
+
+        if ("link".equals(action)) {
+            if (!(sender instanceof Player)) {
+                plugin.msg().send(sender, "general.player-only");
+                return true;
+            }
+            Entity target = lookedAtEntity((Player) sender);
+            if (target == null) {
+                plugin.msg().send(sender, "npc.look-at-npc");
+                return true;
+            }
+            String name = target.getCustomName();
+            if (name == null || name.isEmpty()) {
+                plugin.msg().send(sender, "npc.no-name");
+                return true;
+            }
+            persona.entityName(name);
+            plugin.npcs().saveLinks();
+            plugin.msg().send(sender, "npc.linked", "npc", persona.id(), "entity", Msg.plain(name));
+            return true;
+        }
+
+        help(sender);
+        return true;
+    }
+
+    /**
+     * Closest entity roughly along the player's line of sight. Bukkit 1.12.2 has no ray-trace
+     * helper, so this compares direction vectors instead.
+     */
+    private Entity lookedAtEntity(Player player) {
+        Vector eye = player.getEyeLocation().toVector();
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Entity best = null;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (Entity entity : player.getNearbyEntities(6.0D, 6.0D, 6.0D)) {
+            Vector toEntity = entity.getLocation().add(0.0D, 1.0D, 0.0D).toVector().subtract(eye);
+            double distance = toEntity.length();
+            if (distance < 0.5D) {
+                continue;
+            }
+            if (toEntity.normalize().dot(direction) < 0.94D) {
+                continue;
+            }
+            if (distance < bestDistance) {
+                best = entity;
+                bestDistance = distance;
+            }
+        }
+        return best;
     }
 
     private boolean zone(CommandSender sender, String[] args) {
@@ -234,6 +330,9 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Msg.color("&b/jobsadmin zone del <اسم> &8- &7احذف منطقة"));
         sender.sendMessage(Msg.color("&b/jobsadmin zone list &8- &7كل المناطق"));
         sender.sendMessage(Msg.color("&b/jobsadmin zone check &8- &7وش ناقص عشان الوظائف تشتغل"));
+        sender.sendMessage(Msg.color("&b/jobsadmin npc link <معرّف> &8- &7اربط شخصية بالـ NPC اللي قدامك"));
+        sender.sendMessage(Msg.color("&b/jobsadmin npc unlink <معرّف> &8- &7فك الربط"));
+        sender.sendMessage(Msg.color("&b/jobsadmin npc list &8- &7كل الشخصيات وحالة ربطها"));
         sender.sendMessage(Msg.color("&b/jobsadmin reload &8- &7إعادة تحميل الإعدادات"));
         sender.sendMessage(Msg.color("&b/jobsadmin stats <لاعب> &8- &7إحصائيات لاعب"));
         sender.sendMessage(Msg.color("&8&m---------------------------------"));
@@ -246,9 +345,25 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return out;
         }
         if (args.length == 1) {
-            for (String sub : Arrays.asList("zone", "reload", "stats")) {
+            for (String sub : Arrays.asList("zone", "npc", "reload", "stats")) {
                 if (sub.startsWith(args[0].toLowerCase())) {
                     out.add(sub);
+                }
+            }
+            return out;
+        }
+        if (args.length == 2 && "npc".equals(args[0].toLowerCase())) {
+            for (String sub : Arrays.asList("link", "unlink", "list")) {
+                if (sub.startsWith(args[1].toLowerCase())) {
+                    out.add(sub);
+                }
+            }
+            return out;
+        }
+        if (args.length == 3 && "npc".equals(args[0].toLowerCase())) {
+            for (NpcPersona persona : plugin.npcs().all()) {
+                if (persona.id().startsWith(args[2].toLowerCase())) {
+                    out.add(persona.id());
                 }
             }
             return out;
