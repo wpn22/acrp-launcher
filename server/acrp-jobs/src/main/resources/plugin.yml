@@ -1,0 +1,39 @@
+name: ACRPJobs
+main: com.adventurecity.jobs.ACRPJobsPlugin
+version: ${project.version}
+author: Adventure City
+description: Interactive roleplay jobs system for Adventure City Roleplay
+
+commands:
+  jobs:
+    description: Job center - browse, join and work jobs
+    usage: /jobs
+    aliases: [job, wazayef]
+  duty:
+    description: Toggle on/off duty for your current job
+    usage: /duty
+  ac:
+    description: Adventure City currency - balance, pay and admin operations
+    usage: /ac [pay|give|take|set|top] ...
+    aliases: [money, balance, bal]
+  taxi:
+    description: Call a taxi, or accept a taxi call as a driver
+    usage: /taxi call|accept <id>|list|cancel
+  jobsadmin:
+    description: Admin tools - zones, reload, player stats
+    usage: /jobsadmin <zone|reload|stats>
+    aliases: [jadmin]
+
+permissions:
+  acrp.jobs.use:
+    description: Access the job center and work jobs
+    default: true
+  acrp.jobs.taxi:
+    description: Call a taxi
+    default: true
+  acrp.jobs.admin:
+    description: Manage zones, reload config, run currency admin commands
+    default: op
+  acrp.jobs.job.*:
+    description: Access to every whitelisted job
+    default: op

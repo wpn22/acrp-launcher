@@ -1,0 +1,87 @@
+# ============================================================
+#  وظيفة التاكسي - تستقبل طلبات حقيقية من اللاعبين عبر /taxi call
+#  المناطق المطلوبة:  taxi_stand  +  مجموعتا taxi_stands و city_points
+#  ملاحظة: نظام الطلبات هنا هو نفسه اللي بيشغّل ٩١١ للشرطة والإسعاف لاحقا.
+# ============================================================
+id: taxi
+name: "&eالتاكسي"
+icon: MINECART
+description:
+  - "&7وصّل اللاعبين داخل المدينة واكسب أجرة حسب المسافة."
+  - "&7تستقبل طلبات مباشرة من اللاعبين."
+whitelist: false
+# قناة الطلبات التي تستقبلها هذه الوظيفة
+dispatch: taxi
+dutyZones:
+  - taxi_stand
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "سائق جديد"
+    salary: 100
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "سائق"
+    salary: 170
+    xpRequired: 300
+    payMultiplier: 1.2
+  - level: 3
+    name: "سائق محترف"
+    salary: 250
+    xpRequired: 1200
+    payMultiplier: 1.4
+
+contracts:
+  # رحلة لاعب حقيقي - تبدأ فقط من /taxi accept
+  - id: taxi_ride
+    name: "&fرحلة راكب"
+    icon: MINECART
+    dispatchOnly: true
+    description:
+      - "&7رحلة لراكب حقيقي - الأجرة حسب المسافة."
+    basePay: 150
+    payPerBlock: 3
+    chargePassenger: true
+    xpReward: 30
+    cooldownSeconds: 10
+    steps:
+      - type: GOTO_PLAYER
+        radius: 8
+        title: "توجه لموقع الراكب"
+      - type: CONFIRM
+        target: PLAYER
+        radius: 8
+        markRideStart: true
+        title: "أكد صعود الراكب"
+      - type: CONFIRM
+        target: PLAYER
+        radius: 10
+        title: "وصّل الراكب لوجهته ثم أكد"
+
+  # رحلة NPC - متاحة دائما حتى لو ما فيه لاعبين يطلبون
+  - id: npc_fare
+    name: "&fزبون من الموقف"
+    icon: NAME_TAG
+    description:
+      - "&7استلم زبون من موقف التاكسي ووصّله."
+      - "&7الوقت المتوقع: &f~3 دقائق"
+    basePay: 260
+    randomBonus: 140
+    xpReward: 25
+    cooldownSeconds: 45
+    steps:
+      - type: GOTO_ZONE
+        zoneGroup: taxi_stands
+        title: "توجه لموقف التاكسي"
+      - type: WAIT_TIMER
+        seconds: 10
+        title: "انتظار صعود الزبون"
+      - type: GOTO_ZONE
+        zoneGroup: city_points
+        title: "وصّل الزبون لوجهته"

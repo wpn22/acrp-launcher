@@ -1,0 +1,76 @@
+# ============================================================
+#  وظيفة الشاحنات - رحلات طويلة بأجر عالي
+#  المناطق المطلوبة:  truck_depot  +  مجموعة truck_stops
+# ============================================================
+id: trucker
+name: "&6الشاحنات"
+icon: CHEST
+description:
+  - "&7انقل البضائع بين مستودعات المدينة."
+  - "&7رحلات أطول لكن الأجر أعلى بكثير."
+whitelist: false
+dutyZones:
+  - truck_depot
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "سائق متدرب"
+    salary: 150
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "سائق شاحنة"
+    salary: 230
+    xpRequired: 400
+    payMultiplier: 1.2
+  - level: 3
+    name: "ناقل معتمد"
+    salary: 340
+    xpRequired: 1500
+    payMultiplier: 1.45
+
+contracts:
+  - id: city_route
+    name: "&fخط توزيع المدينة"
+    icon: CHEST
+    description:
+      - "&7حمّل البضاعة ووزّعها على محطتين ثم ارجع."
+      - "&7الوقت المتوقع: &f~8 دقائق"
+    basePay: 900
+    randomBonus: 500
+    xpReward: 90
+    cooldownSeconds: 90
+    steps:
+      - type: GOTO_ZONE
+        zone: truck_depot
+        title: "توجه للمستودع الرئيسي"
+      - type: WAIT_TIMER
+        seconds: 20
+        title: "تحميل البضاعة"
+      - type: PICKUP_ITEM
+        item: CHEST
+        amount: 2
+        itemName: "&6شحنة بضائع"
+        title: "استلم الشحنة"
+      - type: DELIVER_ITEM
+        zoneGroup: truck_stops
+        amount: 1
+        title: "المحطة الأولى"
+      - type: WAIT_TIMER
+        seconds: 15
+        title: "تفريغ الحمولة"
+      - type: DELIVER_ITEM
+        zoneGroup: truck_stops
+        amount: 1
+        title: "المحطة الثانية"
+      - type: WAIT_TIMER
+        seconds: 15
+        title: "تفريغ الحمولة"
+      - type: GOTO_ZONE
+        zone: truck_depot
+        title: "ارجع للمستودع"
