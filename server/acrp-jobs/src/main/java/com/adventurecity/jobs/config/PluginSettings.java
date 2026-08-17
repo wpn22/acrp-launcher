@@ -40,6 +40,12 @@ public final class PluginSettings {
     public final int dispatchExpireSeconds;
     public final int maxOpenCalls;
 
+    public final boolean routesEnabled;
+    public final int maxActiveWalkers;
+    public final double routeActivationRange;
+    public final double routeSpeed;
+    public final int routePopulation;
+
     public final boolean vehiclesEnabled;
     public final String vehicleSpawnCommand;
     public final String vehicleDespawnCommand;
@@ -86,6 +92,14 @@ public final class PluginSettings {
 
         dispatchExpireSeconds = Math.max(15, config.getInt("dispatch.expireSeconds", 180));
         maxOpenCalls = Math.max(1, config.getInt("dispatch.maxOpenCalls", 30));
+
+        routesEnabled = config.getBoolean("routes.enabled", true);
+        // The one number that decides what the route system costs the server. 50 is a hard ceiling
+        // so a typo cannot fill the map with entities.
+        maxActiveWalkers = Math.max(0, Math.min(50, config.getInt("routes.maxActiveWalkers", 5)));
+        routeActivationRange = Math.max(8.0D, config.getDouble("routes.defaults.activationRange", 48.0D));
+        routeSpeed = Math.max(0.3D, config.getDouble("routes.defaults.speed", 3.2D));
+        routePopulation = Math.max(0, Math.min(20, config.getInt("routes.defaults.population", 3)));
 
         vehiclesEnabled = config.getBoolean("integration.vehicles.enabled", false);
         vehicleSpawnCommand = config.getString("integration.vehicles.spawnCommand", "");

@@ -37,11 +37,17 @@ public final class NpcListener implements Listener {
             return;
         }
         Entity entity = event.getRightClicked();
-        String name = entity.getCustomName();
-        if (name == null || name.isEmpty()) {
-            return;
+
+        // A route walker carries its persona through the route it belongs to, so those NPCs can be
+        // given any display name at all and still talk.
+        NpcPersona persona = plugin.routes().personaOf(entity);
+        if (persona == null) {
+            String name = entity.getCustomName();
+            if (name == null || name.isEmpty()) {
+                return;
+            }
+            persona = plugin.npcs().byEntityName(name);
         }
-        NpcPersona persona = plugin.npcs().byEntityName(name);
         if (persona == null) {
             return;
         }
@@ -52,7 +58,10 @@ public final class NpcListener implements Listener {
             plugin.dialogue().end(player, true);
             return;
         }
-        plugin.dialogue().start(player, persona, entity.getLocation());
+        if (plugin.dialogue().start(player, persona, entity.getLocation())) {
+            // The walker stops and turns to face the player until the conversation ends.
+            plugin.routes().startTalking(entity, player);
+        }
     }
 
     /**

@@ -24,6 +24,8 @@ import com.adventurecity.jobs.job.JobManager;
 import com.adventurecity.jobs.job.PayrollTask;
 import com.adventurecity.jobs.listener.NpcListener;
 import com.adventurecity.jobs.listener.PlayerListener;
+import com.adventurecity.jobs.listener.RouteListener;
+import com.adventurecity.jobs.route.RouteService;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.storage.SqlStorage;
 import com.adventurecity.jobs.ui.MenuListener;
@@ -66,11 +68,13 @@ public final class ACRPJobsPlugin extends JavaPlugin {
     private NpcRegistry npcs;
     private AiBridgeClient aiBridge;
     private DialogueService dialogue;
+    private RouteService routes;
 
     private PayrollTask payrollTask;
     private BukkitTask tickTask;
     private BukkitTask payrollHandle;
     private BukkitTask autosaveTask;
+    private BukkitTask routeTask;
 
     @Override
     public void onEnable() {
@@ -107,11 +111,19 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         npcs.load();
         aiBridge = new AiBridgeClient(this);
         dialogue = new DialogueService(this);
+        routes = new RouteService(this);
+        // Anything wearing our tag is a leftover from a crash - clear it before loading our own.
+        int swept = routes.sweep();
+        if (swept > 0) {
+            getLogger().info("[ACRPJobs] Removed " + swept + " route NPC(s) left over from a previous run.");
+        }
+        routes.load();
 
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new NpcListener(this), this);
+        getServer().getPluginManager().registerEvents(new RouteListener(this), this);
         startTasks();
 
         // /reload or a late install: players are already online and need their data.
@@ -121,7 +133,8 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
 
         getLogger().info("[ACRPJobs] Enabled - " + jobs.all().size() + " job(s), "
-                + zones.all().size() + " zone(s), " + npcs.all().size() + " npc(s)"
+                + zones.all().size() + " zone(s), " + npcs.all().size() + " npc(s), "
+                + routes.routeCount() + " route(s)"
                 + (aiBridge.enabled() ? ", AI dialogue on." : ", AI dialogue off."));
     }
 
@@ -135,6 +148,12 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
         if (autosaveTask != null) {
             autosaveTask.cancel();
+        }
+        if (routeTask != null) {
+            routeTask.cancel();
+        }
+        if (routes != null) {
+            routes.shutdown();
         }
         if (hud != null) {
             hud.clearAll();
@@ -158,6 +177,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
         if (!new File(getDataFolder(), "npcs.yml").isFile()) {
             saveResource("npcs.yml", false);
+        }
+        if (!new File(getDataFolder(), "routes.yml").isFile()) {
+            saveResource("routes.yml", false);
         }
         File jobFolder = new File(getDataFolder(), "jobs");
         if (!jobFolder.isDirectory() && !jobFolder.mkdirs()) {
@@ -205,8 +227,18 @@ public final class ACRPJobsPlugin extends JavaPlugin {
                 contracts.tick();
                 dispatch.tick();
                 dialogue.tick();
+                routes.editor().tickVisuals();
             }
         }, 20L, 10L);
+
+        // Walkers move by teleport, so they need a shorter period than everything else - every
+        // two ticks is smooth on the client. The spawn/despawn decision rides along once a second.
+        routeTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                routes.tick();
+            }
+        }, 40L, 2L);
 
         payrollTask = new PayrollTask(this);
         payrollHandle = payrollTask.runTaskTimer(this, 1200L, 1200L);
@@ -232,6 +264,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         zones.load();
         jobs.load();
         npcs.load();
+        routes.load();
     }
 
     public PluginSettings settings() {
@@ -304,5 +337,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
 
     public DialogueService dialogue() {
         return dialogue;
+    }
+
+    public RouteService routes() {
+        return routes;
     }
 }
