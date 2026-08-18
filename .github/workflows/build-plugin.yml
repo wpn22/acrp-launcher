@@ -155,8 +155,8 @@ jobs:
           if grep -qE 'Could not load .plugins/ACRPJobs|Error occurred while enabling ACRPJobs' "$LOG"; then
             fail "the plugin failed to load"
           fi
-          if grep -qE '^[[:space:]]+at com\.adventurecity\.' "$LOG"; then
-            grep -nE -B 10 '^[[:space:]]+at com\.adventurecity\.' "$LOG" | head -40
+          if grep -qE '[[:space:]]at com\.adventurecity\.' "$LOG"; then
+            grep -nE -B 10 '[[:space:]]at com\.adventurecity\.' "$LOG" | head -40
             fail "an exception came from our own code"
           fi
 
