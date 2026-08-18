@@ -40,6 +40,9 @@ public final class PluginSettings {
     public final int dispatchExpireSeconds;
     public final int maxOpenCalls;
 
+    /** Master switch over the only world write this plugin is capable of. Off by default. */
+    public final boolean allowBlockChanges;
+
     public final boolean spotsEnabled;
     public final int maxActiveSpotEntities;
     public final int spotActiveCount;
@@ -100,6 +103,8 @@ public final class PluginSettings {
 
         dispatchExpireSeconds = Math.max(15, config.getInt("dispatch.expireSeconds", 180));
         maxOpenCalls = Math.max(1, config.getInt("dispatch.maxOpenCalls", 30));
+
+        allowBlockChanges = config.getBoolean("world.allowBlockChanges", false);
 
         spotsEnabled = config.getBoolean("spots.enabled", true);
         // Only TRASH pools cost entities; dirt, plants and lamps are particles, so this cap is

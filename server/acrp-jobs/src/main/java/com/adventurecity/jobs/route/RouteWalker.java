@@ -14,6 +14,7 @@ import java.util.UUID;
 public final class RouteWalker {
 
     private final Route route;
+    private final int index;
 
     private double progress;
     private double speedFactor = 1.0D;
@@ -24,12 +25,23 @@ public final class RouteWalker {
     private LivingEntity entity;
     private UUID talkingWith;
 
-    public RouteWalker(Route route) {
+    public RouteWalker(Route route, int index) {
         this.route = route;
+        this.index = index;
     }
 
     public Route route() {
         return route;
+    }
+
+    /** Position of this walker in its route's population - walker 0 carries the lead persona. */
+    public int index() {
+        return index;
+    }
+
+    /** The npcs.yml persona this particular walker speaks as, or empty for a silent extra. */
+    public String persona() {
+        return route.personaFor(index);
     }
 
     /** Distance walked in blocks since the walker was created. Folded into the path by RoutePath. */

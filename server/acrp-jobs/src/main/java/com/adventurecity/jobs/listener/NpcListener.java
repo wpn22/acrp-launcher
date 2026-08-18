@@ -58,6 +58,12 @@ public final class NpcListener implements Listener {
             plugin.dialogue().end(player, true);
             return;
         }
+        // A supervisor teaches before they chat: the lesson is the point of walking up to them.
+        if (plugin.training().meet(player, persona)) {
+            // Stands still long enough to finish the sentence, then carries on with the round.
+            plugin.routes().pause(entity, 6000L);
+            return;
+        }
         if (plugin.dialogue().start(player, persona, entity.getLocation())) {
             // The walker stops and turns to face the player until the conversation ends.
             plugin.routes().startTalking(entity, player);

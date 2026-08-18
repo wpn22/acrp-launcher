@@ -109,33 +109,38 @@ public final class RouteService {
             List<RouteWalker> list = new ArrayList<RouteWalker>();
             if (route.path().valid()) {
                 for (int i = 0; i < route.population(); i++) {
-                    list.add(create(route));
+                    list.add(create(route, i));
                 }
             }
             walkers.put(route.id(), list);
         }
     }
 
-    private RouteWalker create(Route route) {
-        RouteWalker walker = new RouteWalker(route);
+    private RouteWalker create(Route route, int index) {
+        RouteWalker walker = new RouteWalker(route, index);
         // Random start along the lap, so a group does not file out of one spot.
         walker.progress(random.nextDouble() * route.path().cycleLength());
         walker.speedFactor(0.9D + random.nextDouble() * 0.2D);
         walker.segment(route.path().segmentAt(walker.progress()));
-        walker.name(pickName(route));
+        walker.name(pickName(walker));
         return walker;
     }
 
-    private String pickName(Route route) {
-        List<String> names = route.names();
-        if (!names.isEmpty()) {
-            return Msg.color(names.get(random.nextInt(names.size())));
-        }
-        if (route.hasPersona()) {
-            NpcPersona persona = plugin.npcs().get(route.persona());
+    /**
+     * A walker with a persona wears that persona's name - a supervisor has to be recognisable in
+     * the street, otherwise a newcomer told to find "abu majed" has no way to spot him.
+     */
+    private String pickName(RouteWalker walker) {
+        String personaId = walker.persona();
+        if (!personaId.isEmpty()) {
+            NpcPersona persona = plugin.npcs().get(personaId);
             if (persona != null) {
                 return Msg.color(persona.name());
             }
+        }
+        List<String> names = walker.route().names();
+        if (!names.isEmpty()) {
+            return Msg.color(names.get(random.nextInt(names.size())));
         }
         return DEFAULT_NAME;
     }
@@ -269,13 +274,20 @@ public final class RouteService {
                     despawn(walker);
                     continue;
                 }
-                candidates.add(new Candidate(walker, talking ? -1.0D : nearest));
+                // Mid-conversation first, then anybody with a name worth walking up to, then the
+                // anonymous extras. A supervisor a newcomer was told to find must not lose their
+                // body to a nameless citizen standing slightly closer.
+                int priority = talking ? 0 : (walker.persona().isEmpty() ? 2 : 1);
+                candidates.add(new Candidate(walker, priority, nearest));
             }
         }
 
         Collections.sort(candidates, new Comparator<Candidate>() {
             @Override
             public int compare(Candidate a, Candidate b) {
+                if (a.priority != b.priority) {
+                    return Integer.compare(a.priority, b.priority);
+                }
                 return Double.compare(a.distanceSquared, b.distanceSquared);
             }
         });
@@ -293,10 +305,12 @@ public final class RouteService {
 
     private static final class Candidate {
         private final RouteWalker walker;
+        private final int priority;
         private final double distanceSquared;
 
-        private Candidate(RouteWalker walker, double distanceSquared) {
+        private Candidate(RouteWalker walker, int priority, double distanceSquared) {
             this.walker = walker;
+            this.priority = priority;
             this.distanceSquared = distanceSquared;
         }
     }
@@ -441,10 +455,19 @@ public final class RouteService {
      */
     public NpcPersona personaOf(Entity entity) {
         RouteWalker walker = walkerOf(entity);
-        if (walker == null || !walker.route().hasPersona()) {
+        if (walker == null) {
             return null;
         }
-        return plugin.npcs().get(walker.route().persona());
+        String personaId = walker.persona();
+        return personaId.isEmpty() ? null : plugin.npcs().get(personaId);
+    }
+
+    /** Stops a walker where they stand for a moment - used while a supervisor explains something. */
+    public void pause(Entity entity, long millis) {
+        RouteWalker walker = walkerOf(entity);
+        if (walker != null) {
+            walker.pauseUntil(System.currentTimeMillis() + millis);
+        }
     }
 
     public void startTalking(Entity entity, Player player) {

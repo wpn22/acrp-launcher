@@ -12,6 +12,7 @@ import com.adventurecity.jobs.spot.WorkSpot;
 import com.adventurecity.jobs.storage.PlayerData;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.storage.TxType;
+import com.adventurecity.jobs.training.TrainingTrigger;
 import com.adventurecity.jobs.util.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -101,6 +102,7 @@ public final class ContractEngine {
         contract.lastCheckpoint(player.getLocation());
         active.put(player.getUniqueId(), contract);
 
+        plugin.training().onAction(player, TrainingTrigger.CONTRACT_START);
         plugin.msg().send(player, "contract.started", "contract", Msg.color(definition.name()));
         plugin.msg().send(player, "contract.next-step", "step", contract.step().title());
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.4F);
@@ -352,6 +354,7 @@ public final class ContractEngine {
             return;
         }
         int done = contract.addSpotCleared();
+        plugin.training().onAction(player, TrainingTrigger.SPOT_CLEARED);
         if (done >= step.amount()) {
             completeStep(player, contract);
             return;
@@ -378,8 +381,10 @@ public final class ContractEngine {
         contract.advance(here);
         if (contract.finished()) {
             complete(player, contract);
+            plugin.training().onAction(player, TrainingTrigger.CONTRACT_DONE);
         } else {
             plugin.msg().send(player, "contract.next-step", "step", contract.step().title());
+            plugin.training().onAction(player, TrainingTrigger.STEP_DONE);
         }
     }
 

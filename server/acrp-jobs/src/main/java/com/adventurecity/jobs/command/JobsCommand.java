@@ -25,7 +25,7 @@ import java.util.List;
 public final class JobsCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "join", "leave", "quit", "confirm", "cancel", "info", "contracts", "help");
+            "join", "leave", "quit", "confirm", "cancel", "info", "contracts", "learn", "help");
 
     private final ACRPJobsPlugin plugin;
 
@@ -88,6 +88,11 @@ public final class JobsCommand implements CommandExecutor, TabCompleter {
             plugin.contracts().cancel(player, true);
             return true;
         }
+        if ("learn".equals(sub) || "training".equals(sub)) {
+            plugin.training().repeat(player);
+            return true;
+        }
+
         if ("contracts".equals(sub) || "tasks".equals(sub)) {
             new ContractMenu(plugin).open(player);
             return true;

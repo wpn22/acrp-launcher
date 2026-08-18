@@ -23,6 +23,7 @@ public final class Route {
     private int population = 3;
     private String entityType = "VILLAGER";
     private String persona = "";
+    private String leadPersona = "";
     private List<String> names = new ArrayList<String>();
     private double activationRange = 48.0D;
     private double pauseChance = 0.15D;
@@ -130,6 +131,30 @@ public final class Route {
 
     public boolean hasPersona() {
         return !persona.isEmpty();
+    }
+
+    /**
+     * Persona for the first walker on this route only. That is how one named supervisor ends up
+     * walking a round among a handful of anonymous citizens instead of three identical foremen.
+     */
+    public String leadPersona() {
+        return leadPersona;
+    }
+
+    public void leadPersona(String leadPersona) {
+        this.leadPersona = leadPersona == null ? "" : leadPersona.trim().toLowerCase();
+    }
+
+    public boolean hasLeadPersona() {
+        return !leadPersona.isEmpty();
+    }
+
+    /** The persona for walker number {@code index} on this route, or empty for a silent extra. */
+    public String personaFor(int index) {
+        if (index == 0 && !leadPersona.isEmpty()) {
+            return leadPersona;
+        }
+        return persona;
     }
 
     public List<String> names() {

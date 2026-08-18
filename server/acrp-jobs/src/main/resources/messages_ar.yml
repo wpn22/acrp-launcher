@@ -71,6 +71,18 @@ contract:
   spot-cleared: "&a✔ &f%done%&7/&f%total%"
   spot-none: "&7ما فيه شي يحتاج شغل حالياً - انتظر شوي."
 
+training:
+  go-find: "&e➜ &7روح دوّر على &f%trainer% &7في الشارع — هو اللي يشرح لك الشغل."
+  header: "&8&m--- &r&e%trainer% &8&m--- &r&7(&f%step%&7/&f%total%&7)"
+  line: "&e%trainer%&7: &f%text%"
+  hint: "&a➜ &f%hint%"
+  step-done: "&a✔ &7%trainer% شافك سويتها — تمام."
+  completed: "&a&lخلصت تدريب &f%job%&a! صرت تعرف شغلك."
+  finished: "&7%trainer% خلص تدريبك من زمان. تبي تتكلم معه عادي؟"
+  not-hired: "&e%trainer%&7: &fأنت مو من ناسنا بعد. سجّل في &f%job% &fوتعال."
+  none: "&7وظيفتك الحالية ما لها تدريب."
+  all-done: "&7خلصت تدريب &f%job% &7كامل."
+
 spot:
   trash-name: "&8كيس زبالة"
   need-duty: "&cلازم تكون على الدوام عشان تشتغل في نظافة المدينة."

@@ -5,6 +5,7 @@ import com.adventurecity.jobs.config.JobDefinition;
 import com.adventurecity.jobs.config.Zone;
 import com.adventurecity.jobs.spot.PumpTool;
 import com.adventurecity.jobs.storage.PlayerData;
+import com.adventurecity.jobs.training.TrainingTrigger;
 import com.adventurecity.jobs.util.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -55,6 +56,7 @@ public final class DutyManager {
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.6F);
         spawnVehicle(player, job);
         giveTool(player, job);
+        plugin.training().onAction(player, TrainingTrigger.DUTY_START);
         return true;
     }
 

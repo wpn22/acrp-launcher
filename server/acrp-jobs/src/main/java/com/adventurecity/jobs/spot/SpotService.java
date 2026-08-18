@@ -423,7 +423,7 @@ public final class SpotService {
      * anything updates a block nearby, so the particles remain the signal that always works.
      */
     private void relight(Location where) {
-        if (where.getWorld() == null) {
+        if (!plugin.settings().allowBlockChanges || where.getWorld() == null) {
             return;
         }
         Block block = where.getBlock();

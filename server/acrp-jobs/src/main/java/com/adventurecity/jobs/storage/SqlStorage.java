@@ -109,7 +109,13 @@ public final class SqlStorage {
                 + "grade INT NOT NULL DEFAULT 1,"
                 + "xp BIGINT NOT NULL DEFAULT 0,"
                 + "hired_at BIGINT NOT NULL DEFAULT 0,"
+                + "lesson INT NOT NULL DEFAULT 0,"
+                + "met_trainer INT NOT NULL DEFAULT 0,"
                 + "PRIMARY KEY (uuid, job_id))");
+
+        // Servers that ran an earlier build already have the table; these fail harmlessly there.
+        executeQuietly("ALTER TABLE acrp_player_jobs ADD COLUMN lesson INT NOT NULL DEFAULT 0");
+        executeQuietly("ALTER TABLE acrp_player_jobs ADD COLUMN met_trainer INT NOT NULL DEFAULT 0");
 
         execute("CREATE TABLE IF NOT EXISTS acrp_transactions ("
                 + autoId + ","
@@ -182,14 +188,15 @@ public final class SqlStorage {
         }
 
         PreparedStatement jobs = connection().prepareStatement(
-                "SELECT job_id, grade, xp, hired_at FROM acrp_player_jobs WHERE uuid=?");
+                "SELECT job_id, grade, xp, hired_at, lesson, met_trainer FROM acrp_player_jobs WHERE uuid=?");
         try {
             jobs.setString(1, uuid.toString());
             ResultSet rs = jobs.executeQuery();
             try {
                 while (rs.next()) {
                     data.addJob(new JobProgress(rs.getString("job_id"), rs.getInt("grade"),
-                            rs.getLong("xp"), rs.getLong("hired_at")));
+                            rs.getLong("xp"), rs.getLong("hired_at"),
+                            rs.getInt("lesson"), rs.getInt("met_trainer") == 1));
                 }
             } finally {
                 rs.close();
@@ -238,26 +245,31 @@ public final class SqlStorage {
 
         for (JobProgress progress : data.jobs()) {
             PreparedStatement jobUpdate = connection().prepareStatement(
-                    "UPDATE acrp_player_jobs SET grade=?, xp=? WHERE uuid=? AND job_id=?");
+                    "UPDATE acrp_player_jobs SET grade=?, xp=?, lesson=?, met_trainer=? WHERE uuid=? AND job_id=?");
             int jobRows;
             try {
                 jobUpdate.setInt(1, progress.gradeLevel());
                 jobUpdate.setLong(2, progress.xp());
-                jobUpdate.setString(3, data.uuid().toString());
-                jobUpdate.setString(4, progress.jobId());
+                jobUpdate.setInt(3, progress.lesson());
+                jobUpdate.setInt(4, progress.metTrainer() ? 1 : 0);
+                jobUpdate.setString(5, data.uuid().toString());
+                jobUpdate.setString(6, progress.jobId());
                 jobRows = jobUpdate.executeUpdate();
             } finally {
                 jobUpdate.close();
             }
             if (jobRows == 0) {
                 PreparedStatement jobInsert = connection().prepareStatement(
-                        "INSERT INTO acrp_player_jobs (uuid, job_id, grade, xp, hired_at) VALUES (?, ?, ?, ?, ?)");
+                        "INSERT INTO acrp_player_jobs (uuid, job_id, grade, xp, hired_at, lesson, met_trainer)"
+                                + " VALUES (?, ?, ?, ?, ?, ?, ?)");
                 try {
                     jobInsert.setString(1, data.uuid().toString());
                     jobInsert.setString(2, progress.jobId());
                     jobInsert.setInt(3, progress.gradeLevel());
                     jobInsert.setLong(4, progress.xp());
                     jobInsert.setLong(5, progress.hiredAt());
+                    jobInsert.setInt(6, progress.lesson());
+                    jobInsert.setInt(7, progress.metTrainer() ? 1 : 0);
                     jobInsert.executeUpdate();
                 } finally {
                     jobInsert.close();

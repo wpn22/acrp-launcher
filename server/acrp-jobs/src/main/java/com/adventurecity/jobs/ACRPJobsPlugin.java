@@ -29,6 +29,7 @@ import com.adventurecity.jobs.listener.SpotListener;
 import com.adventurecity.jobs.route.RouteService;
 import com.adventurecity.jobs.spot.SpotService;
 import com.adventurecity.jobs.storage.PlayerDataManager;
+import com.adventurecity.jobs.training.TrainingService;
 import com.adventurecity.jobs.storage.SqlStorage;
 import com.adventurecity.jobs.ui.MenuListener;
 import com.adventurecity.jobs.util.Msg;
@@ -73,6 +74,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
     private DialogueService dialogue;
     private RouteService routes;
     private SpotService spots;
+    private TrainingService training;
 
     private PayrollTask payrollTask;
     private BukkitTask tickTask;
@@ -130,6 +132,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
             getLogger().info("[ACRPJobs] Removed " + sweptSpots + " work spot item(s) left over from a previous run.");
         }
         spots.load();
+        training = new TrainingService(this);
 
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -378,5 +381,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
 
     public SpotService spots() {
         return spots;
+    }
+
+    public TrainingService training() {
+        return training;
     }
 }

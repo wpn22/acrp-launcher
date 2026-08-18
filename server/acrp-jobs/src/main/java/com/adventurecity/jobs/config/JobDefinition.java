@@ -1,5 +1,6 @@
 package com.adventurecity.jobs.config;
 
+import com.adventurecity.jobs.training.TrainingPlan;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -28,11 +29,13 @@ public final class JobDefinition {
     private final double payrollTaxPercent;
     private final List<JobGrade> grades;
     private final Map<String, ContractDefinition> contracts;
+    private final TrainingPlan training;
 
     private JobDefinition(String id, String name, Material icon, List<String> description, boolean whitelist,
                           String dispatchChannel, List<String> dutyZones, String vehicle, String tool,
                           int payrollIntervalMinutes, boolean payrollRequiresDuty, double payrollTaxPercent,
-                          List<JobGrade> grades, Map<String, ContractDefinition> contracts) {
+                          List<JobGrade> grades, Map<String, ContractDefinition> contracts,
+                          TrainingPlan training) {
         this.id = id;
         this.name = name;
         this.icon = icon;
@@ -47,6 +50,7 @@ public final class JobDefinition {
         this.payrollTaxPercent = payrollTaxPercent;
         this.grades = Collections.unmodifiableList(grades);
         this.contracts = Collections.unmodifiableMap(contracts);
+        this.training = training;
     }
 
     /** Returns null (and logs) when the file cannot produce a usable job. */
@@ -116,7 +120,8 @@ public final class JobDefinition {
                 root.getBoolean("payroll.requiresDuty", true),
                 Math.max(0.0D, Math.min(100.0D, root.getDouble("payroll.taxPercent", 0.0D))),
                 grades,
-                contracts);
+                contracts,
+                TrainingPlan.parse(root.getConfigurationSection("training"), id, logger));
     }
 
     private static ConfigurationSection toSection(Map<?, ?> raw) {
@@ -179,6 +184,11 @@ public final class JobDefinition {
 
     public List<JobGrade> grades() {
         return grades;
+    }
+
+    /** How this job teaches itself, or null when it ships without training. */
+    public TrainingPlan training() {
+        return training;
     }
 
     public Map<String, ContractDefinition> contracts() {

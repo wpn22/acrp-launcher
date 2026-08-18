@@ -74,6 +74,7 @@ public final class RouteRegistry {
         route.population(section.getInt("population", 3));
         route.entityType(section.getString("entity", "VILLAGER"));
         route.persona(section.getString("persona", ""));
+        route.leadPersona(section.getString("leadPersona", ""));
         route.names(section.getStringList("names"));
         route.activationRange(section.getDouble("activationRange", 48.0D));
         route.pauseChance(section.getDouble("pauseChance", 0.15D));
@@ -158,6 +159,7 @@ public final class RouteRegistry {
             config.set(base + "population", route.population());
             config.set(base + "entity", route.entityType());
             config.set(base + "persona", route.persona());
+            config.set(base + "leadPersona", route.leadPersona());
             config.set(base + "names", new ArrayList<String>(route.names()));
             config.set(base + "activationRange", route.activationRange());
             config.set(base + "pauseChance", route.pauseChance());

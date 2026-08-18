@@ -59,6 +59,7 @@ public final class JobManager {
             plugin.msg().send(player, "jobs.switched", "job", Msg.color(job.name()));
         } else {
             plugin.msg().send(player, "jobs.joined", "job", Msg.color(job.name()), "grade", grade.name());
+            plugin.training().onHired(player, job);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);
         return true;
