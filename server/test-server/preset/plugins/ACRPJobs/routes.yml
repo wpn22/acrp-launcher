@@ -1,0 +1,142 @@
+# مسارات سيرفر التجربة.
+# كل مشرف له مسار صغير جنب مقر وظيفته (population: 1)،
+# وفيه مسار كبير لمواطنين عاديين حول نقطة البداية.
+routes:
+  cleaner_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'cleaner_foreman'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "-6,4.0,-18"
+    - "6,4.0,-18"
+  garden_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'gardener_lead'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "-46,4.0,-18"
+    - "-34,4.0,-18"
+  power_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'power_chief'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "34,4.0,30"
+    - "46,4.0,30"
+  build_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'site_manager'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "-46,4.0,30"
+    - "-34,4.0,30"
+  delivery_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'delivery_lead'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "18,4.0,6"
+    - "30,4.0,6"
+  taxi_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'taxi_lead'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "-30,4.0,6"
+    - "-18,4.0,6"
+  truck_walk:
+    world: world
+    mode: PINGPONG
+    speed: 2.6
+    population: 1
+    entity: VILLAGER
+    persona: ''
+    leadPersona: 'truck_lead'
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "-6,4.0,30"
+    - "6,4.0,30"
+  main_street:
+    world: world
+    mode: LOOP
+    speed: 2.6
+    population: 3
+    entity: VILLAGER
+    persona: 'citizen'
+    leadPersona: ''
+    names:
+    - "مواطن"
+    - "ساكن المدينة"
+    - "أهل الحي"
+    activationRange: 48.0
+    pauseChance: 0.25
+    corners:
+    - "18,4.0,18"
+    - "18,4.0,-18"
+    - "-18,4.0,-18"
+    - "-18,4.0,18"

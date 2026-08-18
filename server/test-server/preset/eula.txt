@@ -1,0 +1,3 @@
+# بالموافقة على هذا الملف أنت توافق على اتفاقية Minecraft EULA:
+# https://account.mojang.com/documents/minecraft_eula
+eula=true

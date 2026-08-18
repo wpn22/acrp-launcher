@@ -1,0 +1,143 @@
+# مناطق سيرفر التجربة - عالم مسطّح، كل شي حول نقطة البداية (0,4,0)
+# مولّدة تلقائياً من server/test-server. عدّلها براحتك أو أعد التحديد داخل اللعبة.
+zones:
+  delivery_depot:
+    group: ''
+    world: world
+    x: 24
+    y: 4.0
+    z: 0
+    radius: 7.0
+  taxi_stand:
+    group: ''
+    world: world
+    x: -24
+    y: 4.0
+    z: 0
+    radius: 8.0
+  truck_depot:
+    group: ''
+    world: world
+    x: 0
+    y: 4.0
+    z: 24
+    radius: 8.0
+  cleaner_depot:
+    group: ''
+    world: world
+    x: 0
+    y: 4.0
+    z: -24
+    radius: 7.0
+  city_dump:
+    group: ''
+    world: world
+    x: 40
+    y: 4.0
+    z: -24
+    radius: 8.0
+  garden_depot:
+    group: ''
+    world: world
+    x: -40
+    y: 4.0
+    z: -24
+    radius: 7.0
+  power_depot:
+    group: ''
+    world: world
+    x: 40
+    y: 4.0
+    z: 24
+    radius: 7.0
+  build_depot:
+    group: ''
+    world: world
+    x: -40
+    y: 4.0
+    z: 24
+    radius: 8.0
+  house1:
+    group: 'customers'
+    world: world
+    x: 32
+    y: 4.0
+    z: -10
+    radius: 5.0
+  house2:
+    group: 'customers'
+    world: world
+    x: 36
+    y: 4.0
+    z: 10
+    radius: 5.0
+  house3:
+    group: 'customers'
+    world: world
+    x: 18
+    y: 4.0
+    z: 16
+    radius: 5.0
+  stand1:
+    group: 'taxi_stands'
+    world: world
+    x: -32
+    y: 4.0
+    z: -10
+    radius: 5.0
+  stand2:
+    group: 'taxi_stands'
+    world: world
+    x: -36
+    y: 4.0
+    z: 10
+    radius: 5.0
+  mall:
+    group: 'city_points'
+    world: world
+    x: -14
+    y: 4.0
+    z: 30
+    radius: 6.0
+  park:
+    group: 'city_points'
+    world: world
+    x: 14
+    y: 4.0
+    z: -32
+    radius: 6.0
+  square:
+    group: 'city_points'
+    world: world
+    x: 34
+    y: 4.0
+    z: 34
+    radius: 6.0
+  stop1:
+    group: 'truck_stops'
+    world: world
+    x: 12
+    y: 4.0
+    z: 46
+    radius: 6.0
+  stop2:
+    group: 'truck_stops'
+    world: world
+    x: -12
+    y: 4.0
+    z: 46
+    radius: 6.0
+  site1:
+    group: 'build_sites'
+    world: world
+    x: -52
+    y: 4.0
+    z: 36
+    radius: 6.0
+  site2:
+    group: 'build_sites'
+    world: world
+    x: -30
+    y: 4.0
+    z: 46
+    radius: 6.0
