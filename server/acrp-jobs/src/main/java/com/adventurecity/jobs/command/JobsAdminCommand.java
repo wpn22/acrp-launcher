@@ -6,6 +6,10 @@ import com.adventurecity.jobs.config.JobDefinition;
 import com.adventurecity.jobs.config.Zone;
 import com.adventurecity.jobs.route.Route;
 import com.adventurecity.jobs.route.RouteEditor;
+import com.adventurecity.jobs.spot.SpotEditor;
+import com.adventurecity.jobs.spot.SpotPool;
+import com.adventurecity.jobs.spot.SpotRotation;
+import com.adventurecity.jobs.spot.SpotType;
 import com.adventurecity.jobs.storage.PlayerData;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.util.Msg;
@@ -77,8 +81,211 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return route(sender, args);
         }
 
+        if ("spot".equals(sub)) {
+            return spot(sender, args);
+        }
+
         help(sender);
         return true;
+    }
+
+    /** /jobsadmin spot - marking and tuning the work that appears around the city. */
+    private boolean spot(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            spotHelp(sender);
+            return true;
+        }
+        String action = args[1].toLowerCase();
+
+        if ("list".equals(action)) {
+            spotList(sender);
+            return true;
+        }
+
+        if (!(sender instanceof Player)) {
+            plugin.msg().send(sender, "general.player-only");
+            return true;
+        }
+        Player player = (Player) sender;
+        SpotEditor editor = plugin.spots().editor();
+
+        if ("new".equals(action) || "edit".equals(action)) {
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage",
+                        "/jobsadmin spot new <اسم> <TRASH|DIRT|PLANT|LAMP>");
+                return true;
+            }
+            String id = args[2].toLowerCase();
+            if (!ROUTE_ID.matcher(id).matches()) {
+                plugin.msg().send(sender, "general.usage", "usage",
+                        "/jobsadmin spot new <اسم بحروف إنجليزية وأرقام و _> <النوع>");
+                return true;
+            }
+            SpotType type = args.length > 3 ? SpotType.fromString(args[3]) : null;
+            if (type == null && !plugin.spots().registry().exists(id)) {
+                plugin.msg().send(sender, "spot.type-unknown");
+                return true;
+            }
+            editor.begin(player, id, type);
+            return true;
+        }
+
+        if ("add".equals(action)) {
+            editor.addPoint(player, player.getLocation());
+            return true;
+        }
+
+        if ("undo".equals(action)) {
+            editor.undo(player);
+            return true;
+        }
+
+        if ("done".equals(action) || "finish".equals(action)) {
+            editor.done(player);
+            return true;
+        }
+
+        if ("confirm".equals(action)) {
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin spot confirm yes|no");
+                return true;
+            }
+            String answer = args[2].toLowerCase();
+            editor.confirm(player, "yes".equals(answer) || "y".equals(answer) || "نعم".equals(answer));
+            return true;
+        }
+
+        if ("cancel".equals(action)) {
+            editor.cancel(player);
+            return true;
+        }
+
+        if ("wand".equals(action)) {
+            editor.giveWand(player);
+            return true;
+        }
+
+        if ("show".equals(action)) {
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin spot show <اسم>");
+                return true;
+            }
+            SpotPool pool = plugin.spots().registry().get(args[2]);
+            if (pool == null) {
+                plugin.msg().send(sender, "spot.unknown");
+                return true;
+            }
+            editor.preview(player, pool);
+            return true;
+        }
+
+        if ("del".equals(action) || "delete".equals(action) || "remove".equals(action)) {
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin spot del <اسم>");
+                return true;
+            }
+            if (!plugin.spots().registry().remove(args[2])) {
+                plugin.msg().send(sender, "spot.unknown");
+                return true;
+            }
+            plugin.spots().load();
+            plugin.msg().send(sender, "spot.deleted", "pool", args[2].toLowerCase());
+            return true;
+        }
+
+        if ("set".equals(action)) {
+            return spotSet(sender, args);
+        }
+
+        spotHelp(sender);
+        return true;
+    }
+
+    private void spotList(CommandSender sender) {
+        if (plugin.spots().registry().all().isEmpty()) {
+            plugin.msg().send(sender, "spot.list-none");
+            return;
+        }
+        sender.sendMessage(plugin.msg().get("spot.list-header",
+                "count", plugin.spots().registry().size(),
+                "bodies", plugin.spots().bodyCount(),
+                "max", plugin.settings().maxActiveSpotEntities));
+        long now = System.currentTimeMillis();
+        for (SpotPool pool : plugin.spots().registry().all()) {
+            long next = SpotRotation.secondsUntilNext(pool, now);
+            sender.sendMessage(plugin.msg().get("spot.list-line",
+                    "pool", pool.id(),
+                    "type", pool.type().name(),
+                    "points", pool.pointCount(),
+                    "active", SpotRotation.countActive(pool),
+                    "target", Math.min(pool.activeCount(), pool.pointCount()),
+                    "next", next < 0L ? "-" : next + "ث",
+                    "world", pool.worldName()));
+        }
+    }
+
+    /** Changes one property of a saved pool without re-marking its points. */
+    private boolean spotSet(CommandSender sender, String[] args) {
+        if (args.length < 5) {
+            plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin spot set <اسم> <خاصية> <قيمة>");
+            return true;
+        }
+        SpotPool pool = plugin.spots().registry().get(args[2]);
+        if (pool == null) {
+            plugin.msg().send(sender, "spot.unknown");
+            return true;
+        }
+
+        String key = args[3].toLowerCase();
+        String value = args[4];
+        try {
+            if ("activecount".equals(key)) {
+                pool.activeCount(Integer.parseInt(value));
+                value = String.valueOf(pool.activeCount());
+            } else if ("respawnminutes".equals(key)) {
+                pool.respawnMinutes(Integer.parseInt(value));
+                value = String.valueOf(pool.respawnMinutes());
+            } else if ("activationrange".equals(key)) {
+                pool.activationRange(Double.parseDouble(value));
+                value = String.valueOf(pool.activationRange());
+            } else if ("type".equals(key)) {
+                SpotType type = SpotType.fromString(value);
+                if (type == null) {
+                    plugin.msg().send(sender, "spot.type-unknown");
+                    return true;
+                }
+                pool.type(type);
+                value = pool.type().name();
+            } else if ("swapblock".equals(key)) {
+                pool.swapBlock(Boolean.parseBoolean(value));
+                value = String.valueOf(pool.swapBlock());
+            } else {
+                plugin.msg().send(sender, "spot.set-unknown");
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            plugin.msg().send(sender, "general.invalid-number");
+            return true;
+        }
+
+        plugin.spots().registry().save();
+        plugin.spots().load();
+        plugin.msg().send(sender, "spot.set-done", "key", key, "value", value);
+        return true;
+    }
+
+    private void spotHelp(CommandSender sender) {
+        sender.sendMessage(Msg.color("&8&m---------------------------------"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot new <اسم> <النوع> &8- &7ابدأ التحديد (ياخذ العصا)"));
+        sender.sendMessage(Msg.color("&7  الأنواع: &fTRASH &7زبالة &8| &fDIRT &7وساخة &8| &fPLANT &7زرع &8| &fLAMP &7إنارة"));
+        sender.sendMessage(Msg.color("&7  نقرة يمين = نقطة &8| &7نقرة يسار = تراجع"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot add &8- &7أضف موقعك كنقطة"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot done &8- &7إنهاء + سؤال نعم/لا"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot set <اسم> activeCount 9"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot set <اسم> respawnMinutes 10"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot show <اسم> &8- &7اعرض النقاط (برتقالي = فيها شغل)"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot list &8| &bdel <اسم>"));
+        sender.sendMessage(Msg.color("&8&m---------------------------------"));
     }
 
     /** /jobsadmin route - drawing and managing the paths the city walkers follow. */
@@ -469,6 +676,7 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         Set<String> groups = plugin.jobs().requiredZoneGroups();
         List<String> missingIds = new ArrayList<String>();
         List<String> missingGroups = new ArrayList<String>();
+        List<String> missingPools = new ArrayList<String>();
 
         for (String id : ids) {
             if (!plugin.zones().exists(id)) {
@@ -480,10 +688,15 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
                 missingGroups.add(group);
             }
         }
+        for (String pool : plugin.jobs().requiredSpotPools()) {
+            if (!plugin.spots().registry().exists(pool)) {
+                missingPools.add(pool);
+            }
+        }
 
         sender.sendMessage(Msg.color("&8&m---------------------------------"));
-        if (missingIds.isEmpty() && missingGroups.isEmpty()) {
-            sender.sendMessage(Msg.color("&aكل المناطق المطلوبة موجودة. النظام جاهز للعب."));
+        if (missingIds.isEmpty() && missingGroups.isEmpty() && missingPools.isEmpty()) {
+            sender.sendMessage(Msg.color("&aكل المناطق والنقاط المطلوبة موجودة. النظام جاهز للعب."));
         } else {
             sender.sendMessage(Msg.color("&cناقص عليك:"));
             for (String id : missingIds) {
@@ -493,6 +706,10 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             for (String group : missingGroups) {
                 sender.sendMessage(Msg.color("&7- مجموعة &f" + group
                         + " &8➜ &7/jobsadmin zone set <اسم> 5 " + group));
+            }
+            for (String pool : missingPools) {
+                sender.sendMessage(Msg.color("&7- نقاط &f" + pool
+                        + " &8➜ &7/jobsadmin spot new " + pool + " <TRASH|DIRT|PLANT|LAMP>"));
             }
         }
         sender.sendMessage(Msg.color("&8&m---------------------------------"));
@@ -548,6 +765,8 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Msg.color("&b/jobsadmin npc list &8- &7كل الشخصيات وحالة ربطها"));
         sender.sendMessage(Msg.color("&b/jobsadmin route new <اسم> &8- &7ارسم مسار يمشون عليه"));
         sender.sendMessage(Msg.color("&b/jobsadmin route list &8- &7كل المسارات وحالتها"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot new <اسم> <النوع> &8- &7حدد نقاط زبالة/وساخة/زرع/إنارة"));
+        sender.sendMessage(Msg.color("&b/jobsadmin spot list &8- &7كل مجموعات النقاط وحالتها"));
         sender.sendMessage(Msg.color("&b/jobsadmin reload &8- &7إعادة تحميل الإعدادات"));
         sender.sendMessage(Msg.color("&b/jobsadmin stats <لاعب> &8- &7إحصائيات لاعب"));
         sender.sendMessage(Msg.color("&8&m---------------------------------"));
@@ -560,7 +779,7 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return out;
         }
         if (args.length == 1) {
-            for (String sub : Arrays.asList("zone", "npc", "route", "reload", "stats")) {
+            for (String sub : Arrays.asList("zone", "npc", "route", "spot", "reload", "stats")) {
                 if (sub.startsWith(args[0].toLowerCase())) {
                     out.add(sub);
                 }
@@ -569,6 +788,9 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         }
         if ("route".equals(args[0].toLowerCase())) {
             return routeComplete(args);
+        }
+        if ("spot".equals(args[0].toLowerCase())) {
+            return spotComplete(args);
         }
         if (args.length == 2 && "npc".equals(args[0].toLowerCase())) {
             for (String sub : Arrays.asList("link", "unlink", "list")) {
@@ -608,6 +830,71 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
                         out.add(id);
                     }
                 }
+            }
+        }
+        return out;
+    }
+
+    private List<String> spotComplete(String[] args) {
+        List<String> out = new ArrayList<String>();
+        if (args.length == 2) {
+            for (String sub : Arrays.asList("new", "edit", "add", "undo", "done", "confirm",
+                    "cancel", "wand", "show", "set", "list", "del")) {
+                if (sub.startsWith(args[1].toLowerCase())) {
+                    out.add(sub);
+                }
+            }
+            return out;
+        }
+
+        String action = args[1].toLowerCase();
+        if (args.length == 3) {
+            if ("confirm".equals(action)) {
+                for (String answer : Arrays.asList("yes", "no")) {
+                    if (answer.startsWith(args[2].toLowerCase())) {
+                        out.add(answer);
+                    }
+                }
+                return out;
+            }
+            if ("edit".equals(action) || "show".equals(action) || "set".equals(action)
+                    || "del".equals(action)) {
+                for (SpotPool pool : plugin.spots().registry().all()) {
+                    if (pool.id().startsWith(args[2].toLowerCase())) {
+                        out.add(pool.id());
+                    }
+                }
+            }
+            return out;
+        }
+
+        if (args.length == 4 && ("new".equals(action) || "edit".equals(action))) {
+            for (SpotType type : SpotType.values()) {
+                if (type.name().startsWith(args[3].toUpperCase())) {
+                    out.add(type.name());
+                }
+            }
+            return out;
+        }
+
+        if (args.length == 4 && "set".equals(action)) {
+            for (String key : Arrays.asList("activeCount", "respawnMinutes", "activationRange",
+                    "type", "swapBlock")) {
+                if (key.toLowerCase().startsWith(args[3].toLowerCase())) {
+                    out.add(key);
+                }
+            }
+            return out;
+        }
+
+        if (args.length == 5 && "set".equals(action)) {
+            String key = args[3].toLowerCase();
+            if ("type".equals(key)) {
+                for (SpotType type : SpotType.values()) {
+                    out.add(type.name());
+                }
+            } else if ("swapblock".equals(key)) {
+                out.addAll(Arrays.asList("true", "false"));
             }
         }
         return out;

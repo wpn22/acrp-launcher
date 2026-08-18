@@ -8,6 +8,7 @@ import com.adventurecity.jobs.config.StepDefinition;
 import com.adventurecity.jobs.config.StepType;
 import com.adventurecity.jobs.config.Zone;
 import com.adventurecity.jobs.economy.Payout;
+import com.adventurecity.jobs.spot.WorkSpot;
 import com.adventurecity.jobs.storage.PlayerData;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.storage.TxType;
@@ -272,6 +273,22 @@ public final class ContractEngine {
                 break;
             }
 
+            case CLEAR_SPOTS: {
+                // Completion is pushed in by SpotService when the worker actually clears something;
+                // all this does is point them at the nearest one and show the tally.
+                WorkSpot nearest = plugin.spots().nearestActive(player, step.pool());
+                if (nearest != null) {
+                    target = plugin.spots().locationOf(nearest);
+                } else {
+                    hint = plugin.msg().get("contract.spot-none");
+                }
+                if (hint == null) {
+                    hint = plugin.msg().get("contract.spot-progress",
+                            "done", contract.spotsCleared(), "total", step.amount());
+                }
+                break;
+            }
+
             case CONFIRM: {
                 if (step.targetPlayer() && passenger(contract) == null && contract.dispatchPlayer() != null) {
                     passengerGone(player, contract);
@@ -293,7 +310,11 @@ public final class ContractEngine {
         String info;
         double progress;
 
-        if (step.type() == StepType.WAIT_TIMER && contract.waitStartedAt() > 0L) {
+        if (step.type() == StepType.CLEAR_SPOTS) {
+            progress = step.amount() <= 0 ? 0.0D
+                    : (double) contract.spotsCleared() / (double) step.amount();
+            info = contract.spotsCleared() + "/" + step.amount();
+        } else if (step.type() == StepType.WAIT_TIMER && contract.waitStartedAt() > 0L) {
             long elapsed = System.currentTimeMillis() - contract.waitStartedAt();
             long total = step.seconds() * 1000L;
             progress = (double) elapsed / (double) total;
@@ -315,6 +336,27 @@ public final class ContractEngine {
         if (target != null) {
             plugin.hud().beam(player, target);
         }
+    }
+
+    /**
+     * Called by the work-spot system whenever a player clears a spot. Only counts toward the step
+     * that actually asked for that pool, so cleaning a stain does not advance a rubbish round.
+     */
+    public void onSpotCleared(Player player, String poolId) {
+        ActiveContract contract = active.get(player.getUniqueId());
+        if (contract == null || contract.finished()) {
+            return;
+        }
+        StepDefinition step = contract.step();
+        if (step.type() != StepType.CLEAR_SPOTS || !step.pool().equalsIgnoreCase(poolId)) {
+            return;
+        }
+        int done = contract.addSpotCleared();
+        if (done >= step.amount()) {
+            completeStep(player, contract);
+            return;
+        }
+        plugin.msg().send(player, "contract.spot-cleared", "done", done, "total", step.amount());
     }
 
     // ---------------------------------------------------------------- step completion

@@ -115,6 +115,21 @@ public final class JobRegistry {
         return out;
     }
 
+    /** Spot pools the loaded jobs reference, so /jobsadmin zone check can flag missing ones. */
+    public Set<String> requiredSpotPools() {
+        Set<String> out = new LinkedHashSet<String>();
+        for (JobDefinition job : jobs.values()) {
+            for (ContractDefinition contract : job.contracts().values()) {
+                for (StepDefinition step : contract.steps()) {
+                    if (step.pool() != null && !step.pool().isEmpty()) {
+                        out.add(step.pool().toLowerCase());
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
     public Set<String> requiredZoneGroups() {
         Set<String> out = new LinkedHashSet<String>();
         for (JobDefinition job : jobs.values()) {

@@ -25,7 +25,9 @@ import com.adventurecity.jobs.job.PayrollTask;
 import com.adventurecity.jobs.listener.NpcListener;
 import com.adventurecity.jobs.listener.PlayerListener;
 import com.adventurecity.jobs.listener.RouteListener;
+import com.adventurecity.jobs.listener.SpotListener;
 import com.adventurecity.jobs.route.RouteService;
+import com.adventurecity.jobs.spot.SpotService;
 import com.adventurecity.jobs.storage.PlayerDataManager;
 import com.adventurecity.jobs.storage.SqlStorage;
 import com.adventurecity.jobs.ui.MenuListener;
@@ -46,7 +48,8 @@ import java.io.File;
  */
 public final class ACRPJobsPlugin extends JavaPlugin {
 
-    private static final String[] BUNDLED_JOBS = { "delivery.yml", "taxi.yml", "trucker.yml" };
+    private static final String[] BUNDLED_JOBS = { "delivery.yml", "taxi.yml", "trucker.yml",
+            "cleaner.yml", "gardener.yml", "electrician.yml", "builder.yml" };
 
     private PluginSettings settings;
     private Msg msg;
@@ -69,12 +72,14 @@ public final class ACRPJobsPlugin extends JavaPlugin {
     private AiBridgeClient aiBridge;
     private DialogueService dialogue;
     private RouteService routes;
+    private SpotService spots;
 
     private PayrollTask payrollTask;
     private BukkitTask tickTask;
     private BukkitTask payrollHandle;
     private BukkitTask autosaveTask;
     private BukkitTask routeTask;
+    private BukkitTask spotTask;
 
     @Override
     public void onEnable() {
@@ -119,11 +124,19 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
         routes.load();
 
+        spots = new SpotService(this);
+        int sweptSpots = spots.sweep();
+        if (sweptSpots > 0) {
+            getLogger().info("[ACRPJobs] Removed " + sweptSpots + " work spot item(s) left over from a previous run.");
+        }
+        spots.load();
+
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new NpcListener(this), this);
         getServer().getPluginManager().registerEvents(new RouteListener(this), this);
+        getServer().getPluginManager().registerEvents(new SpotListener(this), this);
         startTasks();
 
         // /reload or a late install: players are already online and need their data.
@@ -134,7 +147,8 @@ public final class ACRPJobsPlugin extends JavaPlugin {
 
         getLogger().info("[ACRPJobs] Enabled - " + jobs.all().size() + " job(s), "
                 + zones.all().size() + " zone(s), " + npcs.all().size() + " npc(s), "
-                + routes.routeCount() + " route(s)"
+                + routes.routeCount() + " route(s), "
+                + spots.registry().size() + " spot pool(s)"
                 + (aiBridge.enabled() ? ", AI dialogue on." : ", AI dialogue off."));
     }
 
@@ -152,8 +166,14 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         if (routeTask != null) {
             routeTask.cancel();
         }
+        if (spotTask != null) {
+            spotTask.cancel();
+        }
         if (routes != null) {
             routes.shutdown();
+        }
+        if (spots != null) {
+            spots.shutdown();
         }
         if (hud != null) {
             hud.clearAll();
@@ -180,6 +200,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         }
         if (!new File(getDataFolder(), "routes.yml").isFile()) {
             saveResource("routes.yml", false);
+        }
+        if (!new File(getDataFolder(), "spots.yml").isFile()) {
+            saveResource("spots.yml", false);
         }
         File jobFolder = new File(getDataFolder(), "jobs");
         if (!jobFolder.isDirectory() && !jobFolder.mkdirs()) {
@@ -240,6 +263,15 @@ public final class ACRPJobsPlugin extends JavaPlugin {
             }
         }, 40L, 2L);
 
+        // Work spots: four times a second is smooth enough for the pump jet, and the rotation
+        // bookkeeping only runs every eighth pass.
+        spotTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                spots.tick();
+            }
+        }, 60L, 5L);
+
         payrollTask = new PayrollTask(this);
         payrollHandle = payrollTask.runTaskTimer(this, 1200L, 1200L);
 
@@ -265,6 +297,7 @@ public final class ACRPJobsPlugin extends JavaPlugin {
         jobs.load();
         npcs.load();
         routes.load();
+        spots.load();
     }
 
     public PluginSettings settings() {
@@ -341,5 +374,9 @@ public final class ACRPJobsPlugin extends JavaPlugin {
 
     public RouteService routes() {
         return routes;
+    }
+
+    public SpotService spots() {
+        return spots;
     }
 }

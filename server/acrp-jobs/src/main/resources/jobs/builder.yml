@@ -1,0 +1,105 @@
+# ============================================================
+#  عامل البناء - ينقل مواد من المستودع لمواقع البناء
+#
+#  المطلوب قبل التشغيل:
+#    منطقة:          build_depot   (المستودع ومقر الدوام)
+#    مجموعة مناطق:   build_sites   (مواقع البناء - اثنين فأكثر)
+#      /jobsadmin zone set site1 6 build_sites
+#      /jobsadmin zone set site2 6 build_sites
+#
+#  هذي الوظيفة **ما تحتاج أي نقاط** - تشتغل على المناطق فقط.
+# ============================================================
+id: builder
+name: "&6عامل البناء"
+icon: BRICK
+description:
+  - "&7انقل مواد البناء من المستودع لمواقع البناء في المدينة."
+  - "&7حمل ثقيل ومسافات أطول - وأجر أعلى."
+whitelist: false
+dutyZones:
+  - build_depot
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "عامل"
+    salary: 140
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "عامل ماهر"
+    salary: 220
+    xpRequired: 400
+    payMultiplier: 1.15
+  - level: 3
+    name: "معلّم بناء"
+    salary: 320
+    xpRequired: 1400
+    payMultiplier: 1.3
+  - level: 4
+    name: "مقاول"
+    salary: 430
+    xpRequired: 3200
+    payMultiplier: 1.5
+
+contracts:
+  - id: material_run
+    name: "&fحمولة مواد"
+    icon: BRICK
+    description:
+      - "&7استلم حمولة من المستودع ووصّلها لموقع البناء."
+      - "&7الوقت المتوقع: &f~4 دقائق"
+    basePay: 350
+    randomBonus: 100
+    xpReward: 32
+    cooldownSeconds: 40
+    steps:
+      - type: PICKUP_ITEM
+        zone: build_depot
+        item: BRICK
+        amount: 16
+        itemName: "&6مواد بناء"
+        title: "استلم الحمولة من المستودع"
+      - type: DELIVER_ITEM
+        zoneGroup: build_sites
+        amount: 16
+        title: "وصّل الحمولة لموقع البناء"
+      - type: WAIT_TIMER
+        seconds: 10
+        title: "جاري التفريغ..."
+
+  - id: double_run
+    name: "&fحمولتان"
+    icon: IRON_INGOT
+    description:
+      - "&7حمولتان لموقعين مختلفين في رحلة وحدة."
+      - "&7الوقت المتوقع: &f~7 دقائق"
+    basePay: 640
+    randomBonus: 180
+    xpReward: 65
+    cooldownSeconds: 120
+    steps:
+      - type: PICKUP_ITEM
+        zone: build_depot
+        item: BRICK
+        amount: 16
+        itemName: "&6مواد بناء"
+        title: "استلم الحمولة الأولى"
+      - type: DELIVER_ITEM
+        zoneGroup: build_sites
+        amount: 16
+        title: "وصّل الحمولة الأولى"
+      - type: PICKUP_ITEM
+        zone: build_depot
+        item: IRON_INGOT
+        amount: 8
+        itemName: "&fحديد تسليح"
+        title: "ارجع واستلم الحديد"
+      - type: DELIVER_ITEM
+        zoneGroup: build_sites
+        amount: 8
+        title: "وصّل الحديد لموقع ثاني"

@@ -22,6 +22,7 @@ public final class JobDefinition {
     private final String dispatchChannel;
     private final List<String> dutyZones;
     private final String vehicle;
+    private final String tool;
     private final int payrollIntervalMinutes;
     private final boolean payrollRequiresDuty;
     private final double payrollTaxPercent;
@@ -29,7 +30,7 @@ public final class JobDefinition {
     private final Map<String, ContractDefinition> contracts;
 
     private JobDefinition(String id, String name, Material icon, List<String> description, boolean whitelist,
-                          String dispatchChannel, List<String> dutyZones, String vehicle,
+                          String dispatchChannel, List<String> dutyZones, String vehicle, String tool,
                           int payrollIntervalMinutes, boolean payrollRequiresDuty, double payrollTaxPercent,
                           List<JobGrade> grades, Map<String, ContractDefinition> contracts) {
         this.id = id;
@@ -40,6 +41,7 @@ public final class JobDefinition {
         this.dispatchChannel = dispatchChannel;
         this.dutyZones = Collections.unmodifiableList(dutyZones);
         this.vehicle = vehicle;
+        this.tool = tool;
         this.payrollIntervalMinutes = payrollIntervalMinutes;
         this.payrollRequiresDuty = payrollRequiresDuty;
         this.payrollTaxPercent = payrollTaxPercent;
@@ -109,6 +111,7 @@ public final class JobDefinition {
                 root.getString("dispatch", ""),
                 dutyZones,
                 root.getString("vehicle", ""),
+                root.getString("tool", "").trim().toUpperCase(),
                 Math.max(1, root.getInt("payroll.intervalMinutes", 30)),
                 root.getBoolean("payroll.requiresDuty", true),
                 Math.max(0.0D, Math.min(100.0D, root.getDouble("payroll.taxPercent", 0.0D))),
@@ -155,6 +158,11 @@ public final class JobDefinition {
 
     public String vehicle() {
         return vehicle;
+    }
+
+    /** Job tool handed out on duty and taken back off duty. Empty for jobs that need none. */
+    public String tool() {
+        return tool;
     }
 
     public int payrollIntervalMinutes() {

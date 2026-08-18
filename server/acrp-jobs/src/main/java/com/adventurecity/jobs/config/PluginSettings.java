@@ -40,6 +40,14 @@ public final class PluginSettings {
     public final int dispatchExpireSeconds;
     public final int maxOpenCalls;
 
+    public final boolean spotsEnabled;
+    public final int maxActiveSpotEntities;
+    public final int spotActiveCount;
+    public final int spotRespawnMinutes;
+    public final double spotActivationRange;
+    public final int pumpSeconds;
+    public final String trashMaterial;
+
     public final boolean routesEnabled;
     public final int maxActiveWalkers;
     public final double routeActivationRange;
@@ -92,6 +100,16 @@ public final class PluginSettings {
 
         dispatchExpireSeconds = Math.max(15, config.getInt("dispatch.expireSeconds", 180));
         maxOpenCalls = Math.max(1, config.getInt("dispatch.maxOpenCalls", 30));
+
+        spotsEnabled = config.getBoolean("spots.enabled", true);
+        // Only TRASH pools cost entities; dirt, plants and lamps are particles, so this cap is
+        // about rubbish bags only.
+        maxActiveSpotEntities = Math.max(0, Math.min(80, config.getInt("spots.maxActiveEntities", 20)));
+        spotActiveCount = Math.max(0, config.getInt("spots.defaults.activeCount", 9));
+        spotRespawnMinutes = Math.max(0, config.getInt("spots.defaults.respawnMinutes", 10));
+        spotActivationRange = Math.max(8.0D, config.getDouble("spots.defaults.activationRange", 48.0D));
+        pumpSeconds = Math.max(1, Math.min(30, config.getInt("spots.pumpSeconds", 3)));
+        trashMaterial = config.getString("spots.trashMaterial", "PAPER");
 
         routesEnabled = config.getBoolean("routes.enabled", true);
         // The one number that decides what the route system costs the server. 50 is a hard ceiling

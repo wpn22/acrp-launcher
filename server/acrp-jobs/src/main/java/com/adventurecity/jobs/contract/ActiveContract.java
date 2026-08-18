@@ -26,6 +26,7 @@ public final class ActiveContract {
     private UUID dispatchPlayer;
     private ItemStack carriedItem;
     private int carriedAmount;
+    private int spotsCleared;
     private boolean suspicious;
 
     public ActiveContract(UUID playerId, JobDefinition job, ContractDefinition definition, Zone[] zones) {
@@ -72,6 +73,7 @@ public final class ActiveContract {
         index++;
         stepStartedAt = System.currentTimeMillis();
         waitStartedAt = 0L;
+        spotsCleared = 0;
         if (checkpoint != null) {
             lastCheckpoint = checkpoint.clone();
         }
@@ -142,6 +144,15 @@ public final class ActiveContract {
 
     public void consumeCarried(int amount) {
         this.carriedAmount = Math.max(0, this.carriedAmount - amount);
+    }
+
+    /** Work spots cleared on the current step. Reset by {@link #advance(Location)}. */
+    public int spotsCleared() {
+        return spotsCleared;
+    }
+
+    public int addSpotCleared() {
+        return ++spotsCleared;
     }
 
     /** Set when a movement check found impossible speed - completion pays nothing. */

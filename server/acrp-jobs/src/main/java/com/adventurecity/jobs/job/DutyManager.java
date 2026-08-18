@@ -3,6 +3,7 @@ package com.adventurecity.jobs.job;
 import com.adventurecity.jobs.ACRPJobsPlugin;
 import com.adventurecity.jobs.config.JobDefinition;
 import com.adventurecity.jobs.config.Zone;
+import com.adventurecity.jobs.spot.PumpTool;
 import com.adventurecity.jobs.storage.PlayerData;
 import com.adventurecity.jobs.util.Msg;
 import org.bukkit.Bukkit;
@@ -53,6 +54,7 @@ public final class DutyManager {
         plugin.msg().send(player, "duty.on", "job", Msg.color(job.name()));
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.6F);
         spawnVehicle(player, job);
+        giveTool(player, job);
         return true;
     }
 
@@ -64,6 +66,7 @@ public final class DutyManager {
         data.onDuty(false);
         plugin.contracts().cancel(player, false);
         plugin.hud().clear(player);
+        plugin.spots().pump().take(player);
         if (announce) {
             plugin.msg().send(player, "duty.off");
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0F, 0.8F);
@@ -92,6 +95,13 @@ public final class DutyManager {
             }
         }
         return !anyDefined;
+    }
+
+    /** Hands over the job's tool, if it declares one. Today that is the cleaner's water pump. */
+    private void giveTool(Player player, JobDefinition job) {
+        if (PumpTool.TOOL_ID.equals(job.tool())) {
+            plugin.spots().pump().give(player);
+        }
     }
 
     private void spawnVehicle(Player player, JobDefinition job) {

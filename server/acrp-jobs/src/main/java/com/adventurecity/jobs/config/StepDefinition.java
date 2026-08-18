@@ -19,10 +19,11 @@ public final class StepDefinition {
     private final int seconds;
     private final boolean markRideStart;
     private final boolean targetPlayer;
+    private final String pool;
 
     private StepDefinition(StepType type, String title, String zone, String zoneGroup, double radius,
                            Material item, int amount, String itemName, int seconds,
-                           boolean markRideStart, boolean targetPlayer) {
+                           boolean markRideStart, boolean targetPlayer, String pool) {
         this.type = type;
         this.title = title;
         this.zone = zone;
@@ -34,6 +35,7 @@ public final class StepDefinition {
         this.seconds = seconds;
         this.markRideStart = markRideStart;
         this.targetPlayer = targetPlayer;
+        this.pool = pool;
     }
 
     /** Returns null (and logs) when the section is not a usable step, so one bad step cannot break the server. */
@@ -58,6 +60,14 @@ public final class StepDefinition {
         if ((type == StepType.PICKUP_ITEM) && material == null) {
             material = Material.PAPER;
         }
+        if (type == StepType.CLEAR_SPOTS) {
+            String pool = section.getString("pool", "");
+            if (pool.isEmpty()) {
+                logger.warning("[ACRPJobs] " + jobId + "/" + contractId + ": a CLEAR_SPOTS step has no"
+                        + " 'pool' - step skipped. Mark one with /jobsadmin spot new <name> <type>.");
+                return null;
+            }
+        }
 
         return new StepDefinition(
                 type,
@@ -70,7 +80,8 @@ public final class StepDefinition {
                 section.getString("itemName", null),
                 Math.max(1, section.getInt("seconds", 10)),
                 section.getBoolean("markRideStart", false),
-                "PLAYER".equalsIgnoreCase(section.getString("target", "")));
+                "PLAYER".equalsIgnoreCase(section.getString("target", "")),
+                section.getString("pool", ""));
     }
 
     public StepType type() {
@@ -118,6 +129,11 @@ public final class StepDefinition {
     /** For CONFIRM steps: measure distance against the dispatch player instead of a zone. */
     public boolean targetPlayer() {
         return targetPlayer;
+    }
+
+    /** For CLEAR_SPOTS: which pool in spots.yml the work comes from. */
+    public String pool() {
+        return pool;
     }
 
     public boolean needsZone() {

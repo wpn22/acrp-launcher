@@ -17,7 +17,9 @@ public enum StepType {
     /** Stay inside the current target for N seconds (loading, treating, repairing). */
     WAIT_TIMER,
     /** Player runs /jobs confirm while close enough to the target. */
-    CONFIRM;
+    CONFIRM,
+    /** Clear a number of work spots from a pool: rubbish, stains, thirsty plants, dead lamps. */
+    CLEAR_SPOTS;
 
     public static StepType fromString(String raw) {
         if (raw == null) {

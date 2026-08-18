@@ -23,8 +23,8 @@ commands:
     description: Start or end a conversation with a city NPC
     usage: /talk <npc>|end
   jobsadmin:
-    description: Admin tools - zones, npcs, routes, reload, player stats
-    usage: /jobsadmin <zone|npc|route|reload|stats>
+    description: Admin tools - zones, npcs, routes, work spots, reload, player stats
+    usage: /jobsadmin <zone|npc|route|spot|reload|stats>
     aliases: [jadmin]
 
 permissions:
