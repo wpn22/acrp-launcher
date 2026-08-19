@@ -16,12 +16,16 @@ cd server/test-server
 ./run/start.sh
 ```
 
-**ويندوز**
+**ويندوز** — فيه دليل كامل خطوة خطوة: **[WINDOWS.md](WINDOWS.md)**
 ```
 cd server\test-server
 setup.bat
 run\start.bat
 ```
+
+> **مودات؟ ولا واحد.** نظام الوظائف ما يستورد أي مود — لا CustomNPCs ولا DynamX ولا غيرهم.
+> البوتات قرويين فانيلا، والزبالة عنصر ساقط، والأوساخ جزيئات. تقدر تجرب كل شي بلاعب
+> ماين كرافت 1.12.2 عادي **بدون Forge أصلاً**.
 
 بعدها ادخل ماين كرافت **1.12.2** ➜ Multiplayer ➜ `localhost`
 
