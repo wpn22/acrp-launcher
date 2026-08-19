@@ -80,6 +80,15 @@ public final class SpotPool {
         return soonest;
     }
 
+    /** Testing aid: make every owed slot due now so the rotation can be watched immediately. */
+    public int forceReturnsDue() {
+        int count = pendingReturns.size();
+        for (int i = 0; i < count; i++) {
+            pendingReturns.set(i, Long.valueOf(0L));
+        }
+        return count;
+    }
+
     public void clearPending() {
         pendingReturns.clear();
         lastCleared = null;

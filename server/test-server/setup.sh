@@ -47,14 +47,40 @@ SERVER_JAR="$RUN/server.jar"
 
 if [ ! -f "$SERVER_JAR" ]; then
   say "أنزّل سيرفر $FLAVOUR 1.12.2"
+  OK=0
   if [ "$FLAVOUR" = "paper" ]; then
-    BUILD="$(curl -fsS 'https://api.papermc.io/v2/projects/paper/versions/1.12.2' | sed -E 's/.*"builds":\[//; s/\].*//' | tr ',' '\n' | tail -1)"
-    [ -n "$BUILD" ] || die "ما قدرت أعرف آخر بِلد من PaperMC. نزّل paper-1.12.2 يدوياً وسمّه $SERVER_JAR"
-    URL="https://api.papermc.io/v2/projects/paper/versions/1.12.2/builds/$BUILD/downloads/paper-1.12.2-$BUILD.jar"
+    # PaperMC أوقفوا الـ v2 API (يرجع 410) — نستخدم v3.
+    BUILD="$(curl -fsS --max-time 60 \
+      'https://fill.papermc.io/v3/projects/paper/versions/1.12.2/builds' 2>/dev/null \
+      | python3 -c 'import json,sys; print(json.load(sys.stdin)[0]["id"])' 2>/dev/null || true)"
+    if [ -n "${BUILD:-}" ]; then
+      curl -fL --progress-bar -o "$SERVER_JAR" \
+        "https://fill.papermc.io/v3/projects/paper/versions/1.12.2/builds/$BUILD/downloads/server:default" \
+        && OK=1
+    fi
   else
-    URL="https://mohistmc.com/api/1.12.2/latest/download"
+    curl -fL --progress-bar -o "$SERVER_JAR" \
+      "https://mohistmc.com/api/1.12.2/latest/download" && OK=1
   fi
-  curl -fL --progress-bar -o "$SERVER_JAR" "$URL" || die "فشل التنزيل. نزّل السيرفر يدوياً وسمّه: $SERVER_JAR"
+
+  if [ "$OK" != "1" ]; then
+    rm -f "$SERVER_JAR"
+    cat <<'MANUAL'
+
+ما قدرت أنزّل السيرفر تلقائياً (الموقع غيّر روابطه أو الشبكة عندك تمنعه).
+نزّله يدوياً — أي واحد من هذول يشتغل:
+
+  •  Mohist 1.12.2   (نفس نوع سيرفرك)      https://mohistmc.com/downloadSoftware?project=mohist
+  •  Paper 1.12.2    (أخف وأسرع للتجربة)   https://papermc.io/downloads/all
+  •  Spigot 1.12.2   (عن طريق BuildTools)  https://www.spigotmc.org/wiki/buildtools/
+
+بعدها سمّه بالضبط:
+
+MANUAL
+    printf '  %s\n\n' "$SERVER_JAR"
+    printf 'ثم أعد تشغيل هذا السكربت.\n\n'
+    exit 1
+  fi
 else
   say "السيرفر منزّل من قبل - أتخطى التنزيل"
 fi

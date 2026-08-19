@@ -1,6 +1,7 @@
 package com.adventurecity.jobs.command;
 
 import com.adventurecity.jobs.ACRPJobsPlugin;
+import com.adventurecity.jobs.admin.SelfTest;
 import com.adventurecity.jobs.ai.NpcPersona;
 import com.adventurecity.jobs.config.JobDefinition;
 import com.adventurecity.jobs.config.Zone;
@@ -85,8 +86,100 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return spot(sender, args);
         }
 
+        if ("test".equals(sub)) {
+            return test(sender, args);
+        }
+
         help(sender);
         return true;
+    }
+
+    /**
+     * /jobsadmin test - checks whatever a machine can check, plus the shortcuts that make the
+     * parts needing human eyes quick to reach.
+     */
+    private boolean test(CommandSender sender, String[] args) {
+        String action = args.length > 1 ? args[1].toLowerCase() : "all";
+
+        if ("rotate".equals(action)) {
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin test rotate <مجموعة|all>");
+                return true;
+            }
+            int pools = 0;
+            int slots = 0;
+            for (SpotPool pool : plugin.spots().registry().all()) {
+                if (!"all".equalsIgnoreCase(args[2]) && !pool.id().equalsIgnoreCase(args[2])) {
+                    continue;
+                }
+                pools++;
+                slots += pool.forceReturnsDue();
+            }
+            if (pools == 0) {
+                plugin.msg().send(sender, "spot.unknown");
+                return true;
+            }
+            sender.sendMessage(Msg.color("&aخلّيت &f" + slots + "&a خانة مستحقة الآن في &f"
+                    + pools + "&a مجموعة - النقاط بترجع خلال ثانيتين بدون انتظار."));
+            return true;
+        }
+
+        if ("kit".equals(action)) {
+            if (!(sender instanceof Player)) {
+                plugin.msg().send(sender, "general.player-only");
+                return true;
+            }
+            Player player = (Player) sender;
+            plugin.spots().editor().giveWand(player);
+            plugin.routes().editor().giveWand(player);
+            plugin.spots().pump().give(player);
+            sender.sendMessage(Msg.color("&aأخذت عدّة التجربة: عصا النقاط، عصا المسارات، والمضخة."));
+            return true;
+        }
+
+        if ("tp".equals(action)) {
+            if (!(sender instanceof Player)) {
+                plugin.msg().send(sender, "general.player-only");
+                return true;
+            }
+            if (args.length < 3) {
+                plugin.msg().send(sender, "general.usage", "usage", "/jobsadmin test tp <منطقة>");
+                return true;
+            }
+            Zone zone = plugin.zones().get(args[2]);
+            if (zone == null) {
+                plugin.msg().send(sender, "admin.zone-unknown");
+                return true;
+            }
+            org.bukkit.Location target = zone.toLocation();
+            if (target == null) {
+                sender.sendMessage(Msg.color("&cعالم المنطقة &f" + zone.id() + "&c غير محمّل."));
+                return true;
+            }
+            ((Player) sender).teleport(target);
+            sender.sendMessage(Msg.color("&aانتقلت لـ &f" + zone.id()));
+            return true;
+        }
+
+        if ("help".equals(action)) {
+            testHelp(sender);
+            return true;
+        }
+
+        new SelfTest(plugin, sender).run(action);
+        return true;
+    }
+
+    private void testHelp(CommandSender sender) {
+        sender.sendMessage(Msg.color("&8&m---------------------------------"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test &8- &7افحص كل شي وأعطني تقرير"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test <قسم> &8- &7افحص قسم واحد"));
+        sender.sendMessage(Msg.color("&7  الأقسام: &fconfig jobs zones spots routes training npcs economy"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test rotate <مجموعة|all> &8- &7رجّع النقاط المنظّفة فوراً"));
+        sender.sendMessage(Msg.color("&7  (بدل ما تنتظر respawnMinutes وأنت تجرّب)"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test kit &8- &7خذ العصي والمضخة"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test tp <منطقة> &8- &7انتقل لأي منطقة"));
+        sender.sendMessage(Msg.color("&8&m---------------------------------"));
     }
 
     /** /jobsadmin spot - marking and tuning the work that appears around the city. */
@@ -767,6 +860,7 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Msg.color("&b/jobsadmin route list &8- &7كل المسارات وحالتها"));
         sender.sendMessage(Msg.color("&b/jobsadmin spot new <اسم> <النوع> &8- &7حدد نقاط زبالة/وساخة/زرع/إنارة"));
         sender.sendMessage(Msg.color("&b/jobsadmin spot list &8- &7كل مجموعات النقاط وحالتها"));
+        sender.sendMessage(Msg.color("&b/jobsadmin test &8- &7افحص كل شي وأعطني تقرير"));
         sender.sendMessage(Msg.color("&b/jobsadmin reload &8- &7إعادة تحميل الإعدادات"));
         sender.sendMessage(Msg.color("&b/jobsadmin stats <لاعب> &8- &7إحصائيات لاعب"));
         sender.sendMessage(Msg.color("&8&m---------------------------------"));
@@ -779,7 +873,7 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             return out;
         }
         if (args.length == 1) {
-            for (String sub : Arrays.asList("zone", "npc", "route", "spot", "reload", "stats")) {
+            for (String sub : Arrays.asList("zone", "npc", "route", "spot", "test", "reload", "stats")) {
                 if (sub.startsWith(args[0].toLowerCase())) {
                     out.add(sub);
                 }
@@ -791,6 +885,9 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
         }
         if ("spot".equals(args[0].toLowerCase())) {
             return spotComplete(args);
+        }
+        if ("test".equals(args[0].toLowerCase())) {
+            return testComplete(args);
         }
         if (args.length == 2 && "npc".equals(args[0].toLowerCase())) {
             for (String sub : Arrays.asList("link", "unlink", "list")) {
@@ -829,6 +926,36 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
                     if (id.startsWith(args[2].toLowerCase()) && !plugin.zones().exists(id)) {
                         out.add(id);
                     }
+                }
+            }
+        }
+        return out;
+    }
+
+    private List<String> testComplete(String[] args) {
+        List<String> out = new ArrayList<String>();
+        if (args.length == 2) {
+            for (String sub : Arrays.asList("all", "config", "jobs", "zones", "spots", "routes",
+                    "training", "npcs", "economy", "rotate", "kit", "tp", "help")) {
+                if (sub.startsWith(args[1].toLowerCase())) {
+                    out.add(sub);
+                }
+            }
+            return out;
+        }
+        if (args.length == 3 && "rotate".equals(args[1].toLowerCase())) {
+            out.add("all");
+            for (SpotPool pool : plugin.spots().registry().all()) {
+                if (pool.id().startsWith(args[2].toLowerCase())) {
+                    out.add(pool.id());
+                }
+            }
+            return out;
+        }
+        if (args.length == 3 && "tp".equals(args[1].toLowerCase())) {
+            for (Zone zone : plugin.zones().all()) {
+                if (zone.id().startsWith(args[2].toLowerCase())) {
+                    out.add(zone.id());
                 }
             }
         }
