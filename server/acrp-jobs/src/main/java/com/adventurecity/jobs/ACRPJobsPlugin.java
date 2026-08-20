@@ -1,5 +1,6 @@
 package com.adventurecity.jobs;
 
+import com.adventurecity.jobs.admin.SelfTest;
 import com.adventurecity.jobs.ai.AiBridgeClient;
 import com.adventurecity.jobs.ai.DialogueService;
 import com.adventurecity.jobs.ai.NpcRegistry;
@@ -147,6 +148,15 @@ public final class ACRPJobsPlugin extends JavaPlugin {
             activity.markActive(player);
             players.loadAsync(player.getUniqueId(), player.getName(), null);
         }
+
+        // A second in, so it lands after every other plugin's boot noise and after any world that
+        // loads late. A misconfigured zone or pool should reach the admin here, not via a player.
+        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                SelfTest.logStartupHealth(ACRPJobsPlugin.this);
+            }
+        }, 20L);
 
         getLogger().info("[ACRPJobs] Enabled - " + jobs.all().size() + " job(s), "
                 + zones.all().size() + " zone(s), " + npcs.all().size() + " npc(s), "

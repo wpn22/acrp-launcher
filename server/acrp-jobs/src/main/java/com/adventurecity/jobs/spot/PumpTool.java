@@ -134,7 +134,10 @@ public final class PumpTool {
         long now = System.currentTimeMillis();
         List<UUID> finished = new ArrayList<UUID>();
 
-        for (Map.Entry<UUID, Spray> entry : sprays.entrySet()) {
+        // Iterate a snapshot: finishing a spray clears a work spot, which reaches into the contract
+        // engine and back out again. Nothing on that path touches this map today, but one refactor
+        // away it would, and the failure mode would be a ConcurrentModificationException mid-tick.
+        for (Map.Entry<UUID, Spray> entry : new ArrayList<Map.Entry<UUID, Spray>>(sprays.entrySet())) {
             UUID id = entry.getKey();
             Spray spray = entry.getValue();
             Player player = Bukkit.getPlayer(id);

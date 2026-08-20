@@ -11,11 +11,14 @@ import com.adventurecity.jobs.spot.SpotEditor;
 import com.adventurecity.jobs.spot.SpotPool;
 import com.adventurecity.jobs.spot.SpotRotation;
 import com.adventurecity.jobs.spot.SpotType;
+import com.adventurecity.jobs.storage.JobProgress;
 import com.adventurecity.jobs.storage.PlayerData;
 import com.adventurecity.jobs.storage.PlayerDataManager;
+import com.adventurecity.jobs.training.TrainingPlan;
 import com.adventurecity.jobs.util.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -151,7 +154,7 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
                 plugin.msg().send(sender, "admin.zone-unknown");
                 return true;
             }
-            org.bukkit.Location target = zone.toLocation();
+            Location target = zone.toLocation();
             if (target == null) {
                 sender.sendMessage(Msg.color("&cعالم المنطقة &f" + zone.id() + "&c غير محمّل."));
                 return true;
@@ -828,6 +831,21 @@ public final class JobsAdminCommand implements CommandExecutor, TabCompleter {
             line(sender, "الرتبة", plugin.jobManager().gradeOf(data, job).name());
         }
         line(sender, "الدوام", data.onDuty() ? "نعم" : "لا");
+        if (job != null) {
+            JobProgress progress = data.job(job.id());
+            TrainingPlan plan = job.training();
+            if (plan == null) {
+                line(sender, "التدريب", "الوظيفة ما لها تدريب");
+            } else if (progress == null) {
+                line(sender, "التدريب", "-");
+            } else if (progress.lesson() >= plan.size()) {
+                line(sender, "التدريب", "مكتمل (" + plan.size() + "/" + plan.size() + ")");
+            } else if (!progress.metTrainer()) {
+                line(sender, "التدريب", "ما قابل المشرف بعد (" + plan.trainer() + ")");
+            } else {
+                line(sender, "التدريب", "الدرس " + (progress.lesson() + 1) + "/" + plan.size());
+            }
+        }
         line(sender, "أرباح اليوم", plugin.economy().format(data.earnedToday(PlayerDataManager.epochDay())));
         line(sender, "خمول", plugin.activity().idleSeconds(target) + " ثانية");
 

@@ -35,8 +35,10 @@ import java.util.Set;
 public final class SelfTest {
 
     private final ACRPJobsPlugin plugin;
+    /** Null means quiet: run every check but print nothing, and collect the problems instead. */
     private final CommandSender sender;
 
+    private final List<String> problems = new ArrayList<String>();
     private int passed;
     private int failed;
     private int warned;
@@ -44,6 +46,28 @@ public final class SelfTest {
     public SelfTest(ACRPJobsPlugin plugin, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
+    }
+
+    /**
+     * Runs everything without printing and logs whatever is broken to the console.
+     *
+     * <p>Called shortly after startup, because a system this configuration-heavy should tell the
+     * admin what is wrong rather than waiting for a player to walk into it. A quiet console means
+     * a healthy setup; nothing is printed when there is nothing to say.</p>
+     */
+    public static void logStartupHealth(ACRPJobsPlugin plugin) {
+        SelfTest test = new SelfTest(plugin, null);
+        test.run("all");
+        if (test.problems.isEmpty()) {
+            plugin.getLogger().info("[ACRPJobs] Self check passed - " + test.passed
+                    + " check(s), nothing to fix.");
+            return;
+        }
+        plugin.getLogger().warning("[ACRPJobs] Self check found " + test.problems.size()
+                + " problem(s) - run /jobsadmin test in game for the full report:");
+        for (String problem : test.problems) {
+            plugin.getLogger().warning("[ACRPJobs]   - " + problem);
+        }
     }
 
     /** @param section one of config/jobs/zones/spots/routes/training/npcs/economy, or "all" */
@@ -383,6 +407,7 @@ public final class SelfTest {
             line("  &a✔ &7" + okText);
         } else {
             failed++;
+            problems.add(Msg.plain(failText));
             line("  &c✘ &c" + failText);
         }
     }
@@ -403,7 +428,9 @@ public final class SelfTest {
     }
 
     private void line(String text) {
-        sender.sendMessage(Msg.color(text));
+        if (sender != null) {
+            sender.sendMessage(Msg.color(text));
+        }
     }
 
     private static String join(List<String> values) {
