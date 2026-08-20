@@ -193,6 +193,15 @@ jobs:
           grep -qE '\[ACRPJobs\] Loaded [1-9][0-9]* route' "$LOG" || fail "routes.yml was not loaded"
           grep -qE '\[ACRPJobs\] Loaded [1-9][0-9]* work spot pool' "$LOG" || fail "spots.yml was not loaded"
 
+          # The plugin validates its own config a second after boot. Asserting that here means the
+          # whole shipped preset - zones, routes, spot pools, trainers, every job step - has to hang
+          # together, in one grep.
+          if grep -q 'Self check found' "$LOG"; then
+            grep -A 20 'Self check found' "$LOG"
+            fail "the plugin's own self check found problems in the shipped presets"
+          fi
+          grep -q 'Self check passed' "$LOG" || fail "the self check never ran"
+
           if grep -q 'Missing message key' "$LOG"; then
             grep -n 'Missing message key' "$LOG" | head
             fail "a message key is missing at runtime"

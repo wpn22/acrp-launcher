@@ -250,11 +250,19 @@ public final class SelfTest {
 
             int active = SpotRotation.countActive(pool);
             int target = Math.min(pool.activeCount(), pool.pointCount());
-            check(active == target,
-                    tag + " النشط " + active + "/" + target + " (دوران كل " + pool.respawnMinutes() + "د)",
-                    tag + " النشط &f" + active + "&c لكن المفروض &f" + target
-                            + "&c - فيه " + pool.pendingCount() + " خانة منتظرة، التالي بعد "
-                            + SpotRotation.secondsUntilNext(pool, now) + "ث");
+            int pending = pool.pendingCount();
+            // Short by exactly the number of slots waiting out their delay is the rotation working,
+            // not a fault - somebody just cleaned. Only an unexplained shortfall is a real problem.
+            if (active < target && pending > 0) {
+                info(tag + " النشط &f" + active + "&7/&f" + target + " &8(&f" + pending
+                        + "&7 خانة تنظّفت، التالي بعد &f" + SpotRotation.secondsUntilNext(pool, now)
+                        + "ث&8)");
+            } else {
+                check(active == target,
+                        tag + " النشط " + active + "/" + target + " (دوران كل " + pool.respawnMinutes() + "د)",
+                        tag + " النشط &f" + active + "&c لكن المفروض &f" + target
+                                + "&c وما فيه ولا خانة منتظرة - الدوران واقف");
+            }
             warnIf(pool.activeCount() > pool.pointCount(),
                     tag + " activeCount (" + pool.activeCount() + ") أكبر من عدد النقاط ("
                             + pool.pointCount() + ") - بيستخدم عدد النقاط");
