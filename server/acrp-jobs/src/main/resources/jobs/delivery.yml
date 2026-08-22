@@ -1,0 +1,133 @@
+# ============================================================
+#  وظيفة التوصيل - مفتوحة للجميع
+#  المناطق المطلوبة:  delivery_depot  +  مجموعة customers
+#  /jobsadmin zone set delivery_depot 6
+#  /jobsadmin zone set house1 5   ثم   /jobsadmin zone group house1 customers
+# ============================================================
+id: delivery
+name: "&aالتوصيل"
+icon: PAPER
+description:
+  - "&7وصّل طلبات سكان المدينة من المستودع لبيوتهم."
+  - "&7وظيفة مفتوحة للجميع - أفضل بداية للاعب الجديد."
+whitelist: false
+dutyZones:
+  - delivery_depot
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "مبتدئ"
+    salary: 120
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "موصّل"
+    salary: 180
+    xpRequired: 250
+    payMultiplier: 1.15
+  - level: 3
+    name: "موصّل خبير"
+    salary: 260
+    xpRequired: 1000
+    payMultiplier: 1.35
+
+contracts:
+  - id: standard_delivery
+    name: "&fتوصيل طلب"
+    icon: CHEST
+    description:
+      - "&7استلم الطلب من المستودع ووصّله للعميل."
+      - "&7الوقت المتوقع: &f~2 دقيقة"
+    basePay: 200
+    randomBonus: 150
+    xpReward: 25
+    cooldownSeconds: 30
+    steps:
+      - type: GOTO_ZONE
+        zone: delivery_depot
+        title: "توجه للمستودع"
+      - type: PICKUP_ITEM
+        item: PAPER
+        amount: 1
+        itemName: "&fطلب توصيل"
+        title: "استلم الطلب"
+      - type: DELIVER_ITEM
+        zoneGroup: customers
+        title: "وصّل الطلب للعميل"
+
+  - id: bulk_delivery
+    name: "&fتوصيل شحنة كبيرة"
+    icon: HOPPER
+    description:
+      - "&7ثلاث عملاء في جولة واحدة - أجر أعلى."
+      - "&7الوقت المتوقع: &f~5 دقائق"
+    basePay: 550
+    randomBonus: 250
+    xpReward: 70
+    cooldownSeconds: 120
+    steps:
+      - type: GOTO_ZONE
+        zone: delivery_depot
+        title: "توجه للمستودع"
+      - type: WAIT_TIMER
+        seconds: 15
+        title: "تحميل الشحنة"
+      - type: PICKUP_ITEM
+        item: PAPER
+        amount: 3
+        itemName: "&fطلبات توصيل"
+        title: "استلم الطلبات"
+      - type: DELIVER_ITEM
+        zoneGroup: customers
+        amount: 1
+        title: "العميل الأول"
+      - type: DELIVER_ITEM
+        zoneGroup: customers
+        amount: 1
+        title: "العميل الثاني"
+      - type: DELIVER_ITEM
+        zoneGroup: customers
+        amount: 1
+        title: "العميل الثالث"
+
+# ============================================================
+#  التدريب الميداني - أبو ريان مشرف التوصيل
+# ============================================================
+training:
+  trainer: delivery_lead
+  intro: "&7تم تعيينك. &bأبو ريان &7مشرف التوصيل يتنقل في وسط المدينة — روح دوّر عليه."
+  lessons:
+    - trigger: DUTY_START
+      hint: "روح لمستودع التوصيل واكتب /duty"
+      text:
+        - "هلا فيك. أنا أبو ريان، مشرف مركز التوصيل."
+        - "شغلنا ثلاث خطوات: استلم، وصّل، ارجع. بس لها أصول."
+        - "أول شي سجّل دوامك في المستودع عشان الطلبات تنكتب باسمك."
+    - trigger: CONTRACT_START
+      hint: "افتح /jobs واختر طلب"
+      text:
+        - "قاعدة المركز: الطلبية أمانة عند صاحبها لين توصل."
+        - "ما نفتحها، ما ناخذ منها، وما نتركها بالطريق."
+        - "وما ندخل بيوت الناس — نوصّل للباب وخلاص."
+        - "اختار طلب من القائمة."
+    - trigger: STEP_DONE
+      hint: "استلم الطلبية من المستودع"
+      text:
+        - "استلمت. العنوان راح يبان لك بعلامة على الخريطة."
+        - "امشِ عدل — السرعة الجنونية تكسّر الطلبية وتضيّع وقتك."
+    - trigger: CONTRACT_DONE
+      hint: "وصّل الطلبية للعنوان"
+      text:
+        - "وصلت. ممتاز."
+        - "الزبون يستنى، بس الأهم إن الطلبية توصل سليمة."
+        - "كمّل وارجع لي أي وقت لو احتجت شي."
+    - trigger: TALK
+      text:
+        - "خلصت التدريب. صرت سائق توصيل معتمد."
+        - "كل ما زادت رحلاتك زادت رتبتك وزاد أجرك على الرحلة."
+        - "وأنا أقيس شغل السائق بشيئين: الوقت، وأدبه مع الزبون. الله يوفقك."

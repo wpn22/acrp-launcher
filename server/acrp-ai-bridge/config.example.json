@@ -1,0 +1,22 @@
+{
+  "_comment": "انسخ هذا الملف باسم config.json وعدّله. لا تضع مفتاح Anthropic هنا - حطه في متغير البيئة ANTHROPIC_API_KEY.",
+
+  "host": "127.0.0.1",
+  "port": 8787,
+  "token": "غيّر-هذا-النص-لكلمة-سر-طويلة",
+
+  "_model_comment": "claude-opus-5 هو الأقوى. claude-haiku-4-5 يكلف تقريباً خُمس السعر ومناسب لحوارات NPC الكثيرة.",
+  "model": "claude-opus-5",
+  "effort": "low",
+  "maxTokens": 4096,
+  "maxReplyChars": 400,
+
+  "cacheTtlSeconds": 900,
+  "cacheMaxEntries": 2000,
+
+  "playerMessagesPerMinute": 5,
+  "dailyBudgetUsd": 5.0,
+
+  "logFile": "logs/dialogue.log",
+  "logEnabled": true
+}

@@ -1,0 +1,123 @@
+# ============================================================
+#  وظيفة التاكسي - تستقبل طلبات حقيقية من اللاعبين عبر /taxi call
+#  المناطق المطلوبة:  taxi_stand  +  مجموعتا taxi_stands و city_points
+#  ملاحظة: نظام الطلبات هنا هو نفسه اللي بيشغّل ٩١١ للشرطة والإسعاف لاحقا.
+# ============================================================
+id: taxi
+name: "&eالتاكسي"
+icon: MINECART
+description:
+  - "&7وصّل اللاعبين داخل المدينة واكسب أجرة حسب المسافة."
+  - "&7تستقبل طلبات مباشرة من اللاعبين."
+whitelist: false
+# قناة الطلبات التي تستقبلها هذه الوظيفة
+dispatch: taxi
+dutyZones:
+  - taxi_stand
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "سائق جديد"
+    salary: 100
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "سائق"
+    salary: 170
+    xpRequired: 300
+    payMultiplier: 1.2
+  - level: 3
+    name: "سائق محترف"
+    salary: 250
+    xpRequired: 1200
+    payMultiplier: 1.4
+
+contracts:
+  # رحلة لاعب حقيقي - تبدأ فقط من /taxi accept
+  - id: taxi_ride
+    name: "&fرحلة راكب"
+    icon: MINECART
+    dispatchOnly: true
+    description:
+      - "&7رحلة لراكب حقيقي - الأجرة حسب المسافة."
+    basePay: 150
+    payPerBlock: 3
+    chargePassenger: true
+    xpReward: 30
+    cooldownSeconds: 10
+    steps:
+      - type: GOTO_PLAYER
+        radius: 8
+        title: "توجه لموقع الراكب"
+      - type: CONFIRM
+        target: PLAYER
+        radius: 8
+        markRideStart: true
+        title: "أكد صعود الراكب"
+      - type: CONFIRM
+        target: PLAYER
+        radius: 10
+        title: "وصّل الراكب لوجهته ثم أكد"
+
+  # رحلة NPC - متاحة دائما حتى لو ما فيه لاعبين يطلبون
+  - id: npc_fare
+    name: "&fزبون من الموقف"
+    icon: NAME_TAG
+    description:
+      - "&7استلم زبون من موقف التاكسي ووصّله."
+      - "&7الوقت المتوقع: &f~3 دقائق"
+    basePay: 260
+    randomBonus: 140
+    xpReward: 25
+    cooldownSeconds: 45
+    steps:
+      - type: GOTO_ZONE
+        zoneGroup: taxi_stands
+        title: "توجه لموقف التاكسي"
+      - type: WAIT_TIMER
+        seconds: 10
+        title: "انتظار صعود الزبون"
+      - type: GOTO_ZONE
+        zoneGroup: city_points
+        title: "وصّل الزبون لوجهته"
+
+# ============================================================
+#  التدريب الميداني - أبو بدر أقدم سائق في المدينة
+# ============================================================
+training:
+  trainer: taxi_lead
+  intro: "&7تم تعيينك. &eأبو بدر &7أقدم سائق في المدينة، تلقاه قريب من الموقف — روح دوّر عليه."
+  lessons:
+    - trigger: DUTY_START
+      hint: "روح لموقف التاكسي واكتب /duty"
+      text:
+        - "أهلين. أنا أبو بدر، أسوق تاكسي في هالمدينة من قبل ما تنولد."
+        - "أول درس: ما فيه سائق يستلم ركاب وهو مو مسجّل."
+        - "سجّل دوامك في الموقف، وبعدها الطلبات تجيك أنت وقاعد."
+    - trigger: CONTRACT_START
+      hint: "استلم طلب بـ /taxi accept أو اختر زبون من /jobs"
+      text:
+        - "الحين وأنت على الدوام، أي واحد يطلب تاكسي راح يجيك الطلب في الشات."
+        - "أول سائق يستلم الطلب ياخذه — فكن سريع بس لا تكون متهور."
+        - "ولو ما فيه طلبات، فيه زبائن بالموقف تقدر تاخذهم من قائمة المهام."
+    - trigger: STEP_DONE
+      hint: "توجّه للراكب"
+      text:
+        - "الراكب أمانة في سيارتك من لحظة ما يركب."
+        - "ما نأذيه، ما نوديه مكان ثاني، وما نطلع عليه أجرة زيادة."
+        - "الأجرة تُحسب على المسافة تلقائياً — أنا اللي وضعت هالنظام عشان ما يغش أحد."
+    - trigger: CONTRACT_DONE
+      hint: "وصّل الراكب وأكّد بـ /jobs confirm"
+      text:
+        - "وصّلته؟ الله يعطيك العافية."
+        - "لا تنسى تأكيد نهاية الرحلة، وإلا ما تنحسب لك ولا يوصل الفلوس."
+    - trigger: TALK
+      text:
+        - "خلاص، صرت سائق على أصولك."
+        - "نصيحة أخيرة من رجّال عاش على هالمهنة:"
+        - "الراكب اللي يرتاح معك يطلبك مرة ثانية. وهذا اللي يبني لك اسم في المدينة."

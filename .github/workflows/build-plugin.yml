@@ -1,0 +1,225 @@
+name: Build Jobs Plugin
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/build-plugin.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Build plugin
+        working-directory: server/acrp-jobs
+        run: mvn -B -ntp clean package
+
+      - name: Check message keys
+        working-directory: server/acrp-jobs
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 tools/check-messages.py
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Test AI bridge
+        working-directory: server/acrp-ai-bridge
+        run: node test/run-tests.js
+
+      - name: Upload plugin jar
+        uses: actions/upload-artifact@v5
+        with:
+          name: ACRPJobs-plugin
+          path: server/acrp-jobs/target/ACRPJobs-*.jar
+          if-no-files-found: error
+
+  # Compiling proves the code is valid Java. It does not prove the plugin actually starts.
+  # This boots a real 1.12.2 server with the jar and the test-server presets, so a bad
+  # plugin.yml, an unreadable config or an exception in onEnable fails the build instead of
+  # being discovered on the live server.
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Build plugin
+        working-directory: server/acrp-jobs
+        run: mvn -B -ntp -q clean package
+
+      # A 1.12.2 server jar is not trivially downloadable any more: PaperMC retired their v2
+      # API (410 Gone) and dropped legacy versions. Try the current API first, and fall back to
+      # building Spigot from source, which always works but is slow - hence the cache.
+      - name: Cache the 1.12.2 server jar
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: run/server.jar
+          key: mc-server-1.12.2-v1
+
+      - name: Fetch a 1.12.2 server
+        id: fetch
+        run: |
+          set -uo pipefail
+          mkdir -p run/plugins
+
+          if [ -s run/server.jar ]; then
+            echo "Using the cached server jar."
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Trying the PaperMC v3 API..."
+          BUILD=$(curl -fsS --max-time 60 \
+            'https://fill.papermc.io/v3/projects/paper/versions/1.12.2/builds' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)[0]["id"])' 2>/dev/null) || true
+          if [ -n "${BUILD:-}" ] && curl -fsSL --max-time 300 -o run/server.jar \
+              "https://fill.papermc.io/v3/projects/paper/versions/1.12.2/builds/$BUILD/downloads/server:default"; then
+            echo "Got Paper build $BUILD."
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          rm -f run/server.jar
+
+          echo "Paper has no 1.12.2 - building Spigot with BuildTools instead (slow, then cached)."
+          mkdir -p build-tools && cd build-tools
+          if curl -fsSL --max-time 300 -o BuildTools.jar \
+              'https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar'; then
+            git config --global --add safe.directory '*' || true
+            if java -jar BuildTools.jar --rev 1.12.2 --compile spigot > buildtools.log 2>&1; then
+              JAR=$(ls -1 spigot-*.jar 2>/dev/null | head -1)
+              if [ -n "${JAR:-}" ]; then
+                mv "$JAR" ../run/server.jar
+                echo "Built $JAR."
+                echo "available=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            fi
+            echo "::group::BuildTools log (tail)"; tail -60 buildtools.log || true; echo "::endgroup::"
+          fi
+
+          echo "available=false" >> "$GITHUB_OUTPUT"
+
+      # A skipped smoke test must never look like a passing one.
+      - name: Say loudly that the smoke test did not run
+        if: steps.fetch.outputs.available != 'true'
+        run: |
+          {
+            echo "## :warning: SMOKE TEST DID NOT RUN"
+            echo ""
+            echo "No Minecraft 1.12.2 server jar could be obtained, so the plugin was **not**"
+            echo "booted. The build is still green because this is an upstream availability"
+            echo "problem, not a code problem - but nothing was verified at runtime."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=Smoke test skipped::No 1.12.2 server jar available; the plugin was not booted."
+
+      - name: Boot the server with the plugin
+        if: steps.fetch.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          cp server/acrp-jobs/target/ACRPJobs-*.jar run/plugins/
+          cp server/test-server/preset/eula.txt run/eula.txt
+          cp server/test-server/preset/server.properties run/server.properties
+          mkdir -p run/plugins/ACRPJobs
+          cp server/test-server/preset/plugins/ACRPJobs/*.yml run/plugins/ACRPJobs/
+
+          cd run
+          mkfifo console
+          # Start the server first, then hold the write end of the pipe open on fd 3. Both opens
+          # block until the other side appears, so this order is what lets them meet - and the
+          # held fd stops the server seeing EOF on stdin and shutting itself down.
+          java -Xmx1500M -jar server.jar nogui < console > server.log 2>&1 &
+          SERVER=$!
+          exec 3> console
+
+          for i in $(seq 1 180); do
+            grep -q 'Done (' server.log && break
+            kill -0 "$SERVER" 2>/dev/null || { echo "server died early"; break; }
+            sleep 1
+          done
+
+          # Exercise a few code paths that only run on the main thread.
+          for cmd in "jobsadmin zone check" "jobsadmin spot list" "jobsadmin route list" "jobsadmin reload"; do
+            echo "$cmd" >&3
+            sleep 2
+          done
+          echo stop >&3
+
+          for i in $(seq 1 60); do kill -0 "$SERVER" 2>/dev/null || break; sleep 1; done
+          exec 3>&-
+          kill "$SERVER" 2>/dev/null || true
+          echo "::group::server.log"; cat server.log; echo "::endgroup::"
+
+      - name: Assert a clean startup
+        if: steps.fetch.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          LOG=run/server.log
+          fail() { echo "SMOKE TEST FAILED: $1"; exit 1; }
+
+          grep -q 'Done (' "$LOG" || fail "the server never finished starting"
+          grep -q '\[ACRPJobs\] Enabled' "$LOG" || fail "ACRPJobs did not enable"
+          grep -q '\[ACRPJobs\] Storage ready' "$LOG" || fail "storage did not come up"
+
+          # The plugin prints its own counts; all of the presets must have been read.
+          grep -qE '\[ACRPJobs\] Loaded [1-9][0-9]* zone' "$LOG" || fail "zones.yml was not loaded"
+          grep -qE '\[ACRPJobs\] Loaded [1-9][0-9]* route' "$LOG" || fail "routes.yml was not loaded"
+          grep -qE '\[ACRPJobs\] Loaded [1-9][0-9]* work spot pool' "$LOG" || fail "spots.yml was not loaded"
+
+          # The plugin validates its own config a second after boot. Asserting that here means the
+          # whole shipped preset - zones, routes, spot pools, trainers, every job step - has to hang
+          # together, in one grep.
+          if grep -q 'Self check found' "$LOG"; then
+            grep -A 20 'Self check found' "$LOG"
+            fail "the plugin's own self check found problems in the shipped presets"
+          fi
+          grep -q 'Self check passed' "$LOG" || fail "the self check never ran"
+
+          if grep -q 'Missing message key' "$LOG"; then
+            grep -n 'Missing message key' "$LOG" | head
+            fail "a message key is missing at runtime"
+          fi
+          if grep -qE 'Could not load .plugins/ACRPJobs|Error occurred while enabling ACRPJobs' "$LOG"; then
+            fail "the plugin failed to load"
+          fi
+          if grep -qE '[[:space:]]at com\.adventurecity\.' "$LOG"; then
+            grep -nE -B 10 '[[:space:]]at com\.adventurecity\.' "$LOG" | head -40
+            fail "an exception came from our own code"
+          fi
+
+          echo "Clean startup: plugin enabled, presets loaded, no exceptions from our code."
+
+      - name: Upload the server log
+        if: always() && steps.fetch.outputs.available == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: smoke-test-log
+          path: run/server.log
+          if-no-files-found: ignore

@@ -1,0 +1,111 @@
+# ============================================================
+#  وظيفة الشاحنات - رحلات طويلة بأجر عالي
+#  المناطق المطلوبة:  truck_depot  +  مجموعة truck_stops
+# ============================================================
+id: trucker
+name: "&6الشاحنات"
+icon: CHEST
+description:
+  - "&7انقل البضائع بين مستودعات المدينة."
+  - "&7رحلات أطول لكن الأجر أعلى بكثير."
+whitelist: false
+dutyZones:
+  - truck_depot
+
+payroll:
+  intervalMinutes: 30
+  requiresDuty: true
+  taxPercent: 10
+
+grades:
+  - level: 1
+    name: "سائق متدرب"
+    salary: 150
+    xpRequired: 0
+    payMultiplier: 1.0
+  - level: 2
+    name: "سائق شاحنة"
+    salary: 230
+    xpRequired: 400
+    payMultiplier: 1.2
+  - level: 3
+    name: "ناقل معتمد"
+    salary: 340
+    xpRequired: 1500
+    payMultiplier: 1.45
+
+contracts:
+  - id: city_route
+    name: "&fخط توزيع المدينة"
+    icon: CHEST
+    description:
+      - "&7حمّل البضاعة ووزّعها على محطتين ثم ارجع."
+      - "&7الوقت المتوقع: &f~8 دقائق"
+    basePay: 900
+    randomBonus: 500
+    xpReward: 90
+    cooldownSeconds: 90
+    steps:
+      - type: GOTO_ZONE
+        zone: truck_depot
+        title: "توجه للمستودع الرئيسي"
+      - type: WAIT_TIMER
+        seconds: 20
+        title: "تحميل البضاعة"
+      - type: PICKUP_ITEM
+        item: CHEST
+        amount: 2
+        itemName: "&6شحنة بضائع"
+        title: "استلم الشحنة"
+      - type: DELIVER_ITEM
+        zoneGroup: truck_stops
+        amount: 1
+        title: "المحطة الأولى"
+      - type: WAIT_TIMER
+        seconds: 15
+        title: "تفريغ الحمولة"
+      - type: DELIVER_ITEM
+        zoneGroup: truck_stops
+        amount: 1
+        title: "المحطة الثانية"
+      - type: WAIT_TIMER
+        seconds: 15
+        title: "تفريغ الحمولة"
+      - type: GOTO_ZONE
+        zone: truck_depot
+        title: "ارجع للمستودع"
+
+# ============================================================
+#  التدريب الميداني - أبو مشعل مسؤول الأسطول
+# ============================================================
+training:
+  trainer: truck_lead
+  intro: "&7تم تعيينك. &6أبو مشعل &7مسؤول الأسطول قريب من المستودع — روح دوّر عليه."
+  lessons:
+    - trigger: DUTY_START
+      hint: "روح لمستودع الشاحنات واكتب /duty"
+      text:
+        - "الشاحنات يا رجّال؟ هذي تحتاج صبر مو سرعة."
+        - "أنا أبو مشعل، مسؤول الأسطول."
+        - "سجّل دوامك أول — الشاحنة ما تطلع من المستودع بدون سائق مسجّل."
+    - trigger: CONTRACT_START
+      hint: "افتح /jobs واختر حمولة"
+      text:
+        - "حمولتنا ثقيلة والمسافات طويلة، عشان كذا أجرها أعلى من أي وظيفة ثانية."
+        - "بس القاعدة وحدة: المحطات كلها مسجّلة عندنا."
+        - "لا تخترع طرق، ولا تفرّغ في مكان مو محطة. الحمولة مسؤوليتك."
+    - trigger: STEP_DONE
+      hint: "استلم الحمولة"
+      text:
+        - "استلمت. خلّ بالك من الوقت — العلامة توديك للمحطة."
+        - "وإذا تعبت، وقّف وارتاح. الشاحنة ما تروح منك."
+    - trigger: CONTRACT_DONE
+      hint: "وصّل الحمولة للمحطة"
+      text:
+        - "وصلت الحمولة سليمة. هذا اللي نبيه."
+        - "كل رحلة تخلصها تزيد خبرتك، وكل رتبة تطلعها يزيد أجرك."
+    - trigger: TALK
+      text:
+        - "خلصت التدريب. صرت سائق شاحنة عندنا."
+        - "آخر كلمة: الشاحنة الثقيلة ما تنفع فيها العجلة أبداً."
+        - "وصّل بأمان، والرزق ما يروح. الله يحفظك."
