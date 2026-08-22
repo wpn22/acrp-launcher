@@ -6,6 +6,10 @@ on:
 
 jobs:
   build:
+    # Not every release here is a launcher release - the jobs plugin publishes its own jar
+    # under jobs-v* tags. Attaching a Windows launcher installer to one of those would put
+    # the wrong download in front of players, so this job stays out of the way.
+    if: ${{ !startsWith(github.event.release.tag_name, 'jobs-v') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

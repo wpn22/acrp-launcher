@@ -1,0 +1,114 @@
+name: Release Jobs Plugin
+
+# The jar is what a server owner actually installs, and a CI artifact is a login-gated zip
+# that expires. Pushing a jobs-v* tag turns the same verified build into a permanent,
+# public, one-click download instead.
+on:
+  push:
+    tags:
+      - 'jobs-v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish under, e.g. jobs-v1.0.1'
+        required: true
+
+permissions:
+  contents: write
+
+# One source of truth for the tag: the pushed tag, or the one typed into the dispatch form.
+# github.ref_name is a branch name on a manual run, which would publish against a branch.
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Build plugin
+        working-directory: server/acrp-jobs
+        run: mvn -B -ntp clean package
+
+      # The same guard the build job runs. A release that ships a missing message key would
+      # show players a raw key in red, and nobody would notice until they were in game.
+      - name: Check message keys
+        working-directory: server/acrp-jobs
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 tools/check-messages.py
+
+      # Zipped separately rather than folded into the jar: these are the ready-made test city,
+      # and an owner laying out their own map should be able to skip them entirely.
+      - name: Package the ready-made test city
+        run: |
+          cd server/test-server/preset/plugins
+          zip -r "$GITHUB_WORKSPACE/ACRPJobs-preset.zip" ACRPJobs
+          cd "$GITHUB_WORKSPACE"
+          unzip -l ACRPJobs-preset.zip
+
+      - name: Collect the jar
+        run: |
+          cp server/acrp-jobs/target/ACRPJobs-*.jar .
+          ls -lh ACRPJobs-*.jar ACRPJobs-preset.zip
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: ACRPJobs ${{ env.TAG }}
+          # Marked pre-release deliberately: the launcher's auto-updater only ever looks at
+          # full releases, so this can never be mistaken for a launcher update.
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: |
+            ACRPJobs-*.jar
+            ACRPJobs-preset.zip
+          body: |
+            ## نظام الوظائف المدنية - Adventure City Roleplay
+
+            ### التحميل
+
+            | الملف | وين يروح |
+            |---|---|
+            | `ACRPJobs-1.0.0.jar` | مجلد `plugins/` في السيرفر |
+            | `ACRPJobs-preset.zip` | **اختياري** - فك الضغط في `plugins/` عشان تجي المدينة التجريبية جاهزة |
+
+            ### المتطلبات
+
+            - ماين كرافت **1.12.2** - سيرفر Paper أو Spigot أو Mohist أو Magma
+            - **Java 8** بالذات
+            - **صفر بلق إنات** - ما فيه `depend` ولا `softdepend`، وسائق SQLite مدمج داخل الجار
+
+            ### وش فيه
+
+            سبع وظائف: توصيل · تاكسي · شاحنات · **عامل نظافة** · **بستاني** · **كهربائي** · **عامل بناء**
+
+            - **مضخة ماء** تغسل بقع الشوارع وتسقي الزرع الذابل
+            - **نقاط عمل تدور**: تحدد ٢٠ نقطة، تسع منها فيها شغل، واللي تنظّفه فقط ينتقل بعد ١٠ دقائق -
+              الحي المهمل يتراكم فيه الوسخ والحي المنظّف يظل نظيف
+            - **تدريب ميداني** على يد مشرفين يمشون في المدينة - الدرس ما يتقدّم بضغطة، لازم تسوي الشغل
+            - اقتصاد `AC` واحد مع سجل تدقيق، وحماية من الاستغلال (سقف يومي، AFK، تبريد العقود)
+            - ما يغيّر ولا بلوك افتراضياً
+
+            ### بعد التركيب
+
+            شغّل السيرفر، وبعدها في اللعبة:
+
+            ```
+            /jobsadmin test     تقرير كامل: كل منطقة ونقطة ومسار ومدرّب - يشتغل ولا لا
+            /jobsadmin test kit العصي والمضخة في يدك
+            /jobs               مركز الوظائف
+            ```
+
+            دليل الإعداد الكامل بالعربي: `server/test-server/README.md` و `WINDOWS.md`
